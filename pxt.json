@@ -2,7 +2,9 @@
     "name": "i2c-car4",
     "description": "",
     "dependencies": {
-        "core": "*"
+        "core": "*",
+        "radio": "*",
+        "motor": "github:calliope-net/motor#v1.0.3"
     },
     "files": [
         "main.blocks",
