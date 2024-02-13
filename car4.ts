@@ -20,7 +20,18 @@ namespace car4
     const i2cMotor = qwiicmotor.eADDR.Motor_x5D
     const i2cWattmeter = wattmeter.eADDR.Watt_x45
 
-    let nServo = 90 // Winkel für geradeaus
+    let nServo_geradeaus = 90 // Winkel für geradeaus
+
+    let bConnected: boolean
+    let iLaufzeit: number // ms seit Start
+    let iFahrstrecke: number
+
+    let dBlink = 0
+    let iServo = 0
+    let iEncoder = 0
+    let iMotor = 0
+    let bLicht = false
+
 
     // ========== group="beim Start"
 
@@ -38,7 +49,11 @@ namespace car4
           calliBot2.c2Initialized = 1
           calliBot2.c2IsBot2 = 1
            */
-        nServo = pServo
+        nServo_geradeaus = pServo
+
+        bConnected = false
+        iLaufzeit = input.runningTime()
+        iFahrstrecke = 0
 
         pins.digitalWritePin(pinRelay, 1) // Relais an schalten
 
@@ -49,14 +64,11 @@ namespace car4
 
         wattmeter.reset(i2cWattmeter, 4096, ck)
 
-
-
         radio.setGroup(pFunkgruppe)
         led.enable(false)
 
-
-        pins.servoWritePin(pinServo, nServo)
-        pins.setPull(pinEncoder, PinPullMode.PullUp)
+        pins.servoWritePin(pinServo, nServo_geradeaus)  // Servo geradeaus lenken
+        pins.setPull(pinEncoder, PinPullMode.PullUp)    // Encoder Eingang PullUp
 
     }
 
