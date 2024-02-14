@@ -11,7 +11,7 @@ namespace car4
     const pin5 = DigitalPin.C5              // Draht blau
     const pin6 = DigitalPin.C6              // Draht gelb
     const pinLicht = DigitalPin.C7          // 5V Licht
-    const pinUltraschall = DigitalPin.C8    // 5V Grove Ultrasonic
+    export const pinUltraschall = DigitalPin.C8    // 5V Grove Ultrasonic
     const pinSpurrechts = DigitalPin.C9     // 9V fischertechnik 128598 IR-Spursensor
     //const pin10 = DigitalPin.C10
     const pinSpurlinks = DigitalPin.C11     // 9V fischertechnik 128598 IR-Spursensor
@@ -20,7 +20,7 @@ namespace car4
     //const i2cMotor = qwiicmotor.eADDR.Motor_x5D
     //const i2cWattmeter = wattmeter.eADDR.Watt_x45
 
-    let nServo_geradeaus = 90 // Winkel für geradeaus
+    let n_Servo_geradeaus = 90 // Winkel für geradeaus
 
     let bConnected: boolean
     //let iLaufzeit: number // ms seit Start
@@ -36,12 +36,12 @@ namespace car4
     // ========== group="beim Start"
 
     //% group="beim Start"
-    //% block="CaR4 beim Start Funkgruppe %pFunkgruppe Servo %pServo"
+    //% block="CaR4 beim Start Funkgruppe %pFunkgruppe Servo ↑ %pServo"
     //% pFunkgruppe.defl=240 pServo.defl=90
     //% inlineInputMode=inline 
     export function beimStart(pFunkgruppe: number, pServo: number) {
 
-        nServo_geradeaus = pServo
+        n_Servo_geradeaus = pServo
 
         bConnected = false
         n_runningTime = input.runningTime()
@@ -59,47 +59,12 @@ namespace car4
         radio.setGroup(pFunkgruppe)
         led.enable(false)
 
-        pins.servoWritePin(pinServo, nServo_geradeaus)  // Servo geradeaus lenken
+        pins.servoWritePin(pinServo, n_Servo_geradeaus)  // Servo geradeaus lenken
         pins.setPull(pinEncoder, PinPullMode.PullUp)    // Encoder Eingang PullUp
 
     }
 
 
-
-    // adapted to Calliope mini V2 Core by M.Klein 17.09.2020
-    /**
-     * Create a new driver of Grove - Ultrasonic Sensor to measure distances in cm
-     * @param pin signal pin of ultrasonic ranger module
-     */
-    //% group="Ultraschall" advanced=true
-    //% block="%pin Entfernung (cm)"
-    //% pin.fieldEditor="gridpicker" pin.fieldOptions.columns=4
-    //% pin.fieldOptions.tooltips="false" pin.fieldOptions.width="250"
-    //% pin.defl=DigitalPin.C16
-
-    export function measureInCentimeters(pin: DigitalPin): number {
-        //let duration = 0;
-        //let RangeInCentimeters = 0;
-
-        pins.digitalWritePin(pin, 0);
-        control.waitMicros(2);
-        pins.digitalWritePin(pin, 1);
-        control.waitMicros(20);
-        pins.digitalWritePin(pin, 0);
-
-        return pins.pulseIn(pin, PulseValue.High, 50000) * 0.0263793
-
-        //duration = pins.pulseIn(pin, PulseValue.High, 50000); // Max duration 50 ms
-
-        //RangeInCentimeters = duration * 153 / 29 / 2 / 100; // 0.0263793
-
-        //if (RangeInCentimeters > 0) distanceBackup = RangeInCentimeters;
-        //else RangeInCentimeters = distanceBackup;
-
-        //basic.pause(50);
-
-        //return RangeInCentimeters;
-    }
 
 
     //% group="Logik (boolean)" advanced=true

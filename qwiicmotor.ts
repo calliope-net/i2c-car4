@@ -27,7 +27,7 @@ namespace car4
     }
 
     //% group="Motor"
-    //% block="Motor A (-100 ← 0 → 100) %speed \\%" weight=6
+    //% block="Motor A (-100 ↓ 0 ↑ 100) %speed \\%" weight=6
     //% speed.shadow="speedPicker" speed.defl=0
     export function motorA(speed: number) {
         // constrain: speed zwischen -100 und +100 begrenzen
@@ -39,7 +39,7 @@ namespace car4
     }
 
     //% group="Motor"
-    //% block="Motor A (0 ← 128 → 255) %speed (128 ist STOP)" weight=4
+    //% block="Motor A (0 ↓ 128 ↑ 255) %speed (128 ist STOP)" weight=4
     //% speed.min=0 speed.max=255 speed.defl=128
     export function motorA255(speed: number) {
         if (between(speed, 0, 255))

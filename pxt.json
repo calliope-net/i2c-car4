@@ -14,7 +14,8 @@
         "car4.ts",
         "qwiicmotor.ts",
         "wattmeter.ts",
-        "radio.ts"
+        "radio.ts",
+        "sensoren.ts"
     ],
     "testFiles": [
         "test.ts"
