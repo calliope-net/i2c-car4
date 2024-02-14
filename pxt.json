@@ -5,8 +5,7 @@
     "dependencies": {
         "core": "*",
         "radio": "*",
-        "lcd-20x4": "github:calliope-net/lcd-20x4#v2.0.1",
-        "wattmeter": "github:calliope-net/wattmeter#v2.0.1"
+        "lcd-20x4": "github:calliope-net/lcd-20x4#v2.0.1"
     },
     "files": [
         "main.blocks",
@@ -14,7 +13,8 @@
         "README.md",
         "car4.ts",
         "qwiicmotor.ts",
-        "wattmeter.ts"
+        "wattmeter.ts",
+        "radio.ts"
     ],
     "testFiles": [
         "test.ts"

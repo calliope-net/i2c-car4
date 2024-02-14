@@ -1,4 +1,4 @@
-// Gib deinen Code hier ein
+
 namespace car4
 /*
 */ { // qwiicmotor.ts
@@ -26,7 +26,6 @@ namespace car4
         return pins.i2cWriteBuffer(i2cMotor, Buffer.fromArray([DRIVER_ENABLE, pON ? 0x01 : 0x00])) == 0
     }
 
-
     //% group="Motor"
     //% block="Motor A (-100 ← 0 → 100) %speed \\%" weight=6
     //% speed.shadow="speedPicker" speed.defl=0
@@ -53,7 +52,6 @@ namespace car4
     //% block="watchdog timeout %time * 10ms" weight=2
     //% time.min=0 time.max=255 time.defl=0
     export function setSafeTime(time: number) {
-       
         if (between(time, 0, 255))
             pins.i2cWriteBuffer(i2cMotor, Buffer.fromArray([FSAFE_CTRL, 0x01])) // 1 -- Center output drive levels for 0 drive
             pins.i2cWriteBuffer(i2cMotor, Buffer.fromArray([FSAFE_TIME, time])) // 0x76 0 ... 2,55 Sekunden

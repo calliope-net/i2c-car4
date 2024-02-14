@@ -23,7 +23,7 @@ namespace car4
     let nServo_geradeaus = 90 // Winkel für geradeaus
 
     let bConnected: boolean
-    let iLaufzeit: number // ms seit Start
+    //let iLaufzeit: number // ms seit Start
     let iFahrstrecke: number
 
     let dBlink = 0
@@ -36,29 +36,21 @@ namespace car4
     // ========== group="beim Start"
 
     //% group="beim Start"
-    //% block="CaR4 beim Start Text %pText Funkgruppe %pFunkgruppe Servo %pServo || i2c-Check %ck"
-    // pADDR.shadow="calli2bot_eADDR"
-    //% ck.shadow="toggleOnOff" ck.defl=1
-    // pLogEnabled.shadow="toggleOnOff"
-    // blockSetVariable=Calli2bot
-    //% pText.defl=CaR4
+    //% block="CaR4 beim Start Funkgruppe %pFunkgruppe Servo %pServo"
     //% pFunkgruppe.defl=240 pServo.defl=90
     //% inlineInputMode=inline 
-    export function beimStart(pText: string, pFunkgruppe: number, pServo: number, ck = true) {
-        /*   let c2 = new Calli2bot(pADDR, (ck ? true : false), pLogEnabled) // optionaler boolean Parameter kann undefined sein
-          calliBot2.c2Initialized = 1
-          calliBot2.c2IsBot2 = 1
-           */
+    export function beimStart(pFunkgruppe: number, pServo: number) {
+
         nServo_geradeaus = pServo
 
         bConnected = false
-        iLaufzeit = input.runningTime()
+        n_runningTime = input.runningTime()
         iFahrstrecke = 0
 
         pins.digitalWritePin(pinRelay, 1) // Relais an schalten
 
-        lcd20x4.initLCD(i2cLCD20x4, false, ck)
-        lcd20x4.writeText(i2cLCD20x4, 0, 0, 9, pText)
+        //lcd20x4.initLCD(i2cLCD20x4, false, ck)
+        //lcd20x4.writeText(i2cLCD20x4, 0, 0, 9, pText)
 
         //qwiicmotor.init(i2cMotor, ck)
 
@@ -117,18 +109,18 @@ namespace car4
     }
 
 
-/* 
-    export function i2cErrorLog(pADDR: number) {
-
-    }
-
-    function writeRegister(pADDR: number, pRegister: number, value: number, repeat: boolean = false): boolean {
-        return pins.i2cWriteBuffer(pADDR, Buffer.fromArray([pRegister, value]), repeat) == 0
-    }
-
-    function readBuffer(pADDR: number, pRegister: number): Buffer {
-        pins.i2cWriteBuffer(pADDR, Buffer.fromArray([pRegister]), true)
-        return pins.i2cReadBuffer(pADDR, 1)
-    }
- */
+    /* 
+        export function i2cErrorLog(pADDR: number) {
+    
+        }
+    
+        function writeRegister(pADDR: number, pRegister: number, value: number, repeat: boolean = false): boolean {
+            return pins.i2cWriteBuffer(pADDR, Buffer.fromArray([pRegister, value]), repeat) == 0
+        }
+    
+        function readBuffer(pADDR: number, pRegister: number): Buffer {
+            pins.i2cWriteBuffer(pADDR, Buffer.fromArray([pRegister]), true)
+            return pins.i2cReadBuffer(pADDR, 1)
+        }
+     */
 }
