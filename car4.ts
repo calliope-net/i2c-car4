@@ -1,4 +1,5 @@
 //% color=#007F00 icon="\uf0d1" block="CaR 4" weight=28
+//% groups='["beim Start","Motor","Servo"]'
 namespace car4
 /* 240213 calliope-net.github.io/car4 f188
 
@@ -20,7 +21,7 @@ namespace car4
     //const i2cMotor = qwiicmotor.eADDR.Motor_x5D
     //const i2cWattmeter = wattmeter.eADDR.Watt_x45
 
-    export let n_Servo_geradeaus = 90 // Winkel für geradeaus
+    let n_Servo_geradeaus = 90 // Winkel für geradeaus
     let n_ServoWinkel: number
 
     let bConnected: boolean
@@ -37,13 +38,13 @@ namespace car4
     // ========== group="beim Start"
 
     //% group="beim Start"
-    //% block="CaR4 beim Start Funkgruppe %pFunkgruppe Servo ↑ %pServo"
-    //% pFunkgruppe.min=0 pFunkgruppe.max=255 pFunkgruppe.defl=240
-    //% pServo.min=81 pServo.max=99 pServo.defl=90
+    //% block="CaR4 beim Start Funkgruppe %funkgruppe Servo ↑ %winkel °"
+    //% funkgruppe.min=0 funkgruppe.max=255 funkgruppe.defl=240
+    //% winkel.min=81 winkel.max=99 winkel.defl=90
     //% inlineInputMode=inline 
-    export function beimStart(pFunkgruppe: number, pServo: number) {
+    export function beimStart(funkgruppe: number, winkel: number) {
 
-        n_Servo_geradeaus = pServo
+        n_Servo_geradeaus = winkel
 
         bConnected = false
         n_runningTime = input.runningTime()
@@ -59,7 +60,7 @@ namespace car4
 
         //wattmeter.reset(i2cWattmeter, 4096, ck)
 
-        radio.setGroup(pFunkgruppe)
+        radio.setGroup(funkgruppe)
         led.enable(false)
 
         pins.servoWritePin(pinServo, n_Servo_geradeaus)  // Servo geradeaus lenken
@@ -69,12 +70,12 @@ namespace car4
 
 
     //% group="Servo"
-    //% block="Servo (↖45° ↑90° ↗135°) %pWinkel"
-    //% pWinkel.min=45 pWinkel.max=135 pWinkel.defl=90
-    export function servo(pWinkel: number) {
-        if (between(pWinkel, 45, 135) && n_ServoWinkel != pWinkel) {
-            n_ServoWinkel = pWinkel
-            pins.servoWritePin(pinServo, pWinkel + n_Servo_geradeaus - 90)
+    //% block="Servo (↖45° ↑90° ↗135°) %winkel °"
+    //% winkel.min=45 winkel.max=135 winkel.defl=90
+    export function servo(winkel: number) {
+        if (between(winkel, 45, 135) && n_ServoWinkel != winkel) {
+            n_ServoWinkel = winkel
+            pins.servoWritePin(pinServo, winkel + n_Servo_geradeaus - 90)
         }
     }
 

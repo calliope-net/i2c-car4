@@ -3,19 +3,9 @@ namespace car4
 /*
 */ { // aktoren.ts
 
-    let n_ServoWinkel: number
+    //let n_ServoWinkel: number
     let n_Licht: boolean
 
-
-    //% group="Servo" subcategory="Aktoren"
-    //% block="Servo %pWinkel"
-    //% pON.shadow="toggleOnOff"
-     function servo(pWinkel: number) {
-        if (between(pWinkel, 45, 135) && n_ServoWinkel != pWinkel) {
-            n_ServoWinkel = pWinkel
-            pins.servoWritePin(pinServo, pWinkel + n_Servo_geradeaus - 90)
-        }
-    }
 
 
     //% group="Relais" subcategory="Aktoren"
