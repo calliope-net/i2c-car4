@@ -3,24 +3,25 @@ namespace car4
 /* 240213 calliope-net.github.io/car4 f188
 
  */ {
-    const pinRelay = DigitalPin.P0          // 5V Grove Relay
-    const pinFototransistor = AnalogPin.P1  // GND fischertechnik 36134 Fototransistor
-    const pinEncoder = DigitalPin.P2        // 5V fischertechnik 186175 Encodermotor Competition
-    const pinBuzzer = DigitalPin.P3         // 5V Grove Buzzer
-    const pinServo = AnalogPin.C4           // 5V fischertechnik 132292 Servo
+    export const pinRelay = DigitalPin.P0          // 5V Grove Relay
+    export const pinFototransistor = AnalogPin.P1  // GND fischertechnik 36134 Fototransistor
+    export const pinEncoder = DigitalPin.P2        // 5V fischertechnik 186175 Encodermotor Competition
+    export const pinBuzzer = DigitalPin.P3         // 5V Grove Buzzer
+    export const pinServo = AnalogPin.C4           // 5V fischertechnik 132292 Servo
     const pin5 = DigitalPin.C5              // Draht blau
     const pin6 = DigitalPin.C6              // Draht gelb
-    const pinLicht = DigitalPin.C7          // 5V Licht
+    export const pinLicht = DigitalPin.C7          // 5V Licht
     export const pinUltraschall = DigitalPin.C8    // 5V Grove Ultrasonic
-    const pinSpurrechts = DigitalPin.C9     // 9V fischertechnik 128598 IR-Spursensor
+    export const pinSpurrechts = DigitalPin.C9     // 9V fischertechnik 128598 IR-Spursensor
     //const pin10 = DigitalPin.C10
-    const pinSpurlinks = DigitalPin.C11     // 9V fischertechnik 128598 IR-Spursensor
+    export const pinSpurlinks = DigitalPin.C11     // 9V fischertechnik 128598 IR-Spursensor
 
     const i2cLCD20x4 = lcd20x4.eADDR.LCD_20x4       // 0x72 qwiic 20x4
     //const i2cMotor = qwiicmotor.eADDR.Motor_x5D
     //const i2cWattmeter = wattmeter.eADDR.Watt_x45
 
-    let n_Servo_geradeaus = 90 // Winkel für geradeaus
+    export let n_Servo_geradeaus = 90 // Winkel für geradeaus
+    let n_ServoWinkel: number
 
     let bConnected: boolean
     //let iLaufzeit: number // ms seit Start
@@ -37,7 +38,8 @@ namespace car4
 
     //% group="beim Start"
     //% block="CaR4 beim Start Funkgruppe %pFunkgruppe Servo ↑ %pServo"
-    //% pFunkgruppe.defl=240 pServo.defl=90
+    //% pFunkgruppe.min=0 pFunkgruppe.max=255 pFunkgruppe.defl=240
+    //% pServo.min=81 pServo.max=99 pServo.defl=90
     //% inlineInputMode=inline 
     export function beimStart(pFunkgruppe: number, pServo: number) {
 
@@ -47,7 +49,8 @@ namespace car4
         n_runningTime = input.runningTime()
         iFahrstrecke = 0
 
-        pins.digitalWritePin(pinRelay, 1) // Relais an schalten
+        //pins.digitalWritePin(pinRelay, 1) // Relais an schalten
+        relay(true) // Relais an schalten
 
         //lcd20x4.initLCD(i2cLCD20x4, false, ck)
         //lcd20x4.writeText(i2cLCD20x4, 0, 0, 9, pText)
@@ -64,6 +67,16 @@ namespace car4
 
     }
 
+
+    //% group="Servo"
+    //% block="Servo (↖45° ↑90° ↗135°) %pWinkel"
+    //% pWinkel.min=45 pWinkel.max=135 pWinkel.defl=90
+    export function servo(pWinkel: number) {
+        if (between(pWinkel, 45, 135) && n_ServoWinkel != pWinkel) {
+            n_ServoWinkel = pWinkel
+            pins.servoWritePin(pinServo, pWinkel + n_Servo_geradeaus - 90)
+        }
+    }
 
 
 

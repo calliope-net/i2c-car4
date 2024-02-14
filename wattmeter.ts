@@ -15,7 +15,7 @@ namespace car4
         REG_CALIBRATION = 0x05      // Register Calibration
     }
 
-    //% group="Wattmeter"
+    //% group="Wattmeter" subcategory="Sensoren"
     //% block="Wattmeter Reset || Calibration %calibration_value"
     //% calibration_value.defl=4096
     export function wattmeterReset(calibration_value?: number): boolean {
@@ -34,7 +34,7 @@ namespace car4
 
 
 
-    //% group="Wattmeter"
+    //% group="Wattmeter" subcategory="Sensoren"
     //% block="Spannung U in V" weight=8
     export function wattmeterV() { // get the BusVoltage （Voltage of IN- to GND)
         // die letzten 3 Bit 2-1-0 gehögen nicht zum Messwert | - | CNVR | OVF
@@ -42,7 +42,7 @@ namespace car4
         return (read_register(eRegister.REG_BUSVOLTAGE).getNumber(NumberFormat.UInt16BE, 0) >> 3) * 0.004    // cpp  0.004/8=0.0005
     }
 
-    //% group="Wattmeter"
+    //% group="Wattmeter" subcategory="Sensoren"
     //% block="Strom I in mA" weight=7
     export function wattmetermA() { // get the Current(Current flows across IN+ and IN-)
         //return read_Register_mit_Vorzeichen_Int16BE(pADDR, eRegister.REG_CURRENT)
