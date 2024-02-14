@@ -17,7 +17,7 @@ namespace car4
     const pinSpurlinks = DigitalPin.C11     // 9V fischertechnik 128598 IR-Spursensor
 
     const i2cLCD20x4 = lcd20x4.eADDR.LCD_20x4       // 0x72 qwiic 20x4
-    const i2cMotor = qwiicmotor.eADDR.Motor_x5D
+    //const i2cMotor = qwiicmotor.eADDR.Motor_x5D
     const i2cWattmeter = wattmeter.eADDR.Watt_x45
 
     let nServo_geradeaus = 90 // Winkel für geradeaus
@@ -60,7 +60,7 @@ namespace car4
         lcd20x4.initLCD(i2cLCD20x4, false, ck)
         lcd20x4.writeText(i2cLCD20x4, 0, 0, 9, pText)
 
-        qwiicmotor.init(i2cMotor, ck)
+        //qwiicmotor.init(i2cMotor, ck)
 
         wattmeter.reset(i2cWattmeter, 4096, ck)
 

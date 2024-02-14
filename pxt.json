@@ -5,7 +5,6 @@
     "dependencies": {
         "core": "*",
         "radio": "*",
-        "motor": "github:calliope-net/motor#v1.0.3",
         "lcd-20x4": "github:calliope-net/lcd-20x4#v2.0.1",
         "wattmeter": "github:calliope-net/wattmeter#v2.0.1"
     },
