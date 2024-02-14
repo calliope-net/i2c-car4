@@ -109,6 +109,15 @@ namespace car4
         //return RangeInCentimeters;
     }
 
+
+    //% group="Logik (boolean)" advanced=true
+    //% block="%i0 zwischen %i1 und %i2" weight=1
+    export function between(i0: number, i1: number, i2: number): boolean {
+        return (i0 >= i1 && i0 <= i2)
+    }
+
+
+
     export function i2cErrorLog(pADDR: number) {
 
     }
