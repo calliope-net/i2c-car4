@@ -8,9 +8,9 @@ namespace car4
     // Register
     enum eRegister {
         REG_CONFIG = 0x00,          // Config register
-        REG_SHUNTVOLTAGE = 0x01,    // Shunt Voltage Register
+        //REG_SHUNTVOLTAGE = 0x01,    // Shunt Voltage Register
         REG_BUSVOLTAGE = 0x02,      // Bus Voltage Register
-        REG_POWER = 0x03,           // Power Register
+        //REG_POWER = 0x03,           // Power Register
         REG_CURRENT = 0x04,         // Current Register
         REG_CALIBRATION = 0x05      // Register Calibration
     }
@@ -36,13 +36,18 @@ namespace car4
 
     //% group="Wattmeter"
     //% block="Wattmeter Spannung U in V" weight=8
-    export function get_bus_voltage_V()  { // get the BusVoltage （Voltage of IN- to GND)
+    export function wattmeterV()  { // get the BusVoltage （Voltage of IN- to GND)
         // die letzten 3 Bit 2-1-0 gehögen nicht zum Messwert | - | CNVR | OVF
         //return (read_Register_UInt16BE(pADDR, eRegister.REG_BUSVOLTAGE) >> 3) * 0.004    // cpp  0.004/8=0.0005
         return (read_register(eRegister.REG_BUSVOLTAGE).getNumber(NumberFormat.UInt16BE, 0) >> 3) * 0.004    // cpp  0.004/8=0.0005
     }
 
-    
+    //% group="Wattmeter"
+    //% block="Wattmeter Strom I in mA" weight=7
+    export function wattmetermA() { // get the Current(Current flows across IN+ and IN-)
+        //return read_Register_mit_Vorzeichen_Int16BE(pADDR, eRegister.REG_CURRENT)
+        read_register(eRegister.REG_CURRENT).getNumber(NumberFormat.Int16BE, 0)
+    }
 
     function read_register(register: eRegister): Buffer { // return: Buffer
         pins.i2cWriteBuffer(i2cWattmeter, Buffer.fromArray([register]), true)
