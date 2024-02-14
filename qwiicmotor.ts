@@ -11,6 +11,13 @@ namespace car4
     const DRIVER_ENABLE = 0x70 //  0x01: Enable, 0x00: Disable this driver
     const FSAFE_CTRL = 0x1F // Use to configure what happens when failsafe occurs.
     const FSAFE_TIME = 0x76 // This register sets the watchdog timeout time, from 10 ms to 2.55 seconds.
+    const CONTROL_1 = 0x78 // 0x01: Reset the processor now.
+
+    //% group="Motor"
+    //% block="Motor Reset" weight=9
+    export function motorReset(){
+        return pins.i2cWriteBuffer(i2cMotor, Buffer.fromArray([CONTROL_1, 1])) == 0 // Reset the processor now.
+    }
 
     //% group="Motor"
     //% block="Motor Power %pON" weight=8

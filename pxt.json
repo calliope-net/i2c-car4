@@ -13,7 +13,8 @@
         "main.ts",
         "README.md",
         "car4.ts",
-        "qwiicmotor.ts"
+        "qwiicmotor.ts",
+        "wattmeter.ts"
     ],
     "testFiles": [
         "test.ts"
