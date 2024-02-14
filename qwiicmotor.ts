@@ -13,9 +13,12 @@ namespace car4
     const FSAFE_TIME = 0x76 // This register sets the watchdog timeout time, from 10 ms to 2.55 seconds.
     const CONTROL_1 = 0x78 // 0x01: Reset the processor now.
 
+    export let n_Motor: number
+
+
     //% group="Motor"
     //% block="Motor Reset" weight=9
-    export function motorReset(){
+    export function motorReset() {
         return pins.i2cWriteBuffer(i2cMotor, Buffer.fromArray([CONTROL_1, 1])) == 0 // Reset the processor now.
     }
 
@@ -54,7 +57,7 @@ namespace car4
     export function setSafeTime(time: number) {
         if (between(time, 0, 255))
             pins.i2cWriteBuffer(i2cMotor, Buffer.fromArray([FSAFE_CTRL, 0x01])) // 1 -- Center output drive levels for 0 drive
-            pins.i2cWriteBuffer(i2cMotor, Buffer.fromArray([FSAFE_TIME, time])) // 0x76 0 ... 2,55 Sekunden
+        pins.i2cWriteBuffer(i2cMotor, Buffer.fromArray([FSAFE_TIME, time])) // 0x76 0 ... 2,55 Sekunden
     }
 
 } // qwiicmotor.ts
