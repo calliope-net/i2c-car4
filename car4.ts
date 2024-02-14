@@ -1,6 +1,6 @@
-//% color=#007F00 icon="\uf188" block="CaR 4" weight=28
+//% color=#007F00 icon="\uf0d1" block="CaR 4" weight=28
 namespace car4
-/* 240213 calliope-net.github.io/car4
+/* 240213 calliope-net.github.io/car4 f188
 
  */ {
     const pinRelay = DigitalPin.P0          // 5V Grove Relay
