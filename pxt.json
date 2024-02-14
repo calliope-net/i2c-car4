@@ -13,7 +13,8 @@
         "main.blocks",
         "main.ts",
         "README.md",
-        "car4.ts"
+        "car4.ts",
+        "qwiicmotor.ts"
     ],
     "testFiles": [
         "test.ts"

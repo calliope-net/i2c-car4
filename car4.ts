@@ -109,4 +109,17 @@ namespace car4
         //return RangeInCentimeters;
     }
 
+    export function i2cErrorLog(pADDR: number) {
+
+    }
+
+    function writeRegister(pADDR: number, pRegister: number, value: number, repeat: boolean = false): boolean {
+        return pins.i2cWriteBuffer(pADDR, Buffer.fromArray([pRegister, value]), repeat) == 0
+    }
+
+    function readBuffer(pADDR: number, pRegister: number): Buffer {
+        pins.i2cWriteBuffer(pADDR, Buffer.fromArray([pRegister]), true)
+        return pins.i2cReadBuffer(pADDR, 1)
+    }
+
 }
