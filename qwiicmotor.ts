@@ -4,7 +4,7 @@ namespace car4
 */ { // qwiicmotor.ts
 
     // I²C Adresse Motor Modul
-    const i2cMotor = 0x5D
+  export  const i2cMotor = 0x5D
     // Register
     const MA_DRIVE = 0x20 // 0x00..0xFF Default 0x80
     //const MB_DRIVE = 0x21

@@ -4,6 +4,8 @@ namespace car4
 /* 240213 calliope-net.github.io/car4 f188
 
  */ {
+    // I²C Adressen sind in qwiicmotor.ts und wattmeter.ts definiert
+    // alle PINs:
     export const pinRelay = DigitalPin.P0          // 5V Grove Relay
     export const pinFototransistor = AnalogPin.P1  // GND fischertechnik 36134 Fototransistor
     export const pinEncoder = DigitalPin.P2        // 5V fischertechnik 186175 Encodermotor Competition
@@ -17,22 +19,22 @@ namespace car4
     //const pin10 = DigitalPin.C10
     export const pinSpurlinks = DigitalPin.C11     // 9V fischertechnik 128598 IR-Spursensor
 
-    const i2cLCD20x4 = lcd20x4.eADDR.LCD_20x4       // 0x72 qwiic 20x4
+    //const i2cLCD20x4 = lcd20x4.eADDR.LCD_20x4       // 0x72 qwiic 20x4
     //const i2cMotor = qwiicmotor.eADDR.Motor_x5D
     //const i2cWattmeter = wattmeter.eADDR.Watt_x45
 
     let n_Servo_geradeaus = 90 // Winkel für geradeaus
     let n_ServoWinkel: number
 
-    let bConnected: boolean
+    //let n_Connected: boolean
     //let iLaufzeit: number // ms seit Start
-    let iFahrstrecke: number
+    //let iFahrstrecke: number
 
-    let dBlink = 0
-    let iServo = 0
-    let iEncoder = 0
-    let iMotor = 0
-    let bLicht = false
+    //let dBlink = 0
+    //let iServo = 0
+    //let iEncoder = 0
+    //let iMotor = 0
+    //let bLicht = false
 
 
     // ========== group="beim Start"
@@ -44,27 +46,29 @@ namespace car4
     //% inlineInputMode=inline 
     export function beimStart(funkgruppe: number, winkel: number) {
 
+        // Parameter
+        radio.setGroup(funkgruppe)
         n_Servo_geradeaus = winkel
 
-        bConnected = false
-        n_runningTime = input.runningTime()
-        iFahrstrecke = 0
+        relay(true) // Relais an schalten (PIN 0)
 
-        //pins.digitalWritePin(pinRelay, 1) // Relais an schalten
-        relay(true) // Relais an schalten
+        // I²C Module initialisieren und Fehler anzeigen
+        if (!wattmeterReset(4096))
+            basic.showString(Buffer.fromArray([i2cWattmeter]).toHex()) // zeige fehlerhafte i2c-Adresse als HEX
 
-        //lcd20x4.initLCD(i2cLCD20x4, false, ck)
-        //lcd20x4.writeText(i2cLCD20x4, 0, 0, 9, pText)
+        if (!motorReset())
+            basic.showString(Buffer.fromArray([i2cMotor]).toHex()) // zeige fehlerhafte i2c-Adresse als HEX
 
-        //qwiicmotor.init(i2cMotor, ck)
 
-        //wattmeter.reset(i2cWattmeter, 4096, ck)
 
-        radio.setGroup(funkgruppe)
-        led.enable(false)
+        // PINs ab PIN 4:
+        led.enable(false) // Matrix deaktivieren (erst nach showString), um PINs zu benutzen
+        servo(n_Servo_geradeaus) // Servo PIN PWM
+        pins.setPull(pinEncoder, PinPullMode.PullUp) // Encoder PIN Eingang PullUp
 
-        pins.servoWritePin(pinServo, n_Servo_geradeaus)  // Servo geradeaus lenken
-        pins.setPull(pinEncoder, PinPullMode.PullUp)    // Encoder Eingang PullUp
+        // in bluetooth.ts:
+        n_connected = false
+        n_runningTime = input.runningTime() // Laufzeit
 
     }
 
@@ -78,6 +82,12 @@ namespace car4
             pins.servoWritePin(pinServo, winkel + n_Servo_geradeaus - 90)
         }
     }
+
+
+
+    //% group="Kommentar"
+    //% block="// %text"
+    export function comment(text: string): void { }
 
 
 
