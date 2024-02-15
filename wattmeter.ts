@@ -32,8 +32,6 @@ namespace car4
             return false
     }
 
-
-
     //% group="Wattmeter" advanced=true
     //% block="Spannung U in V || Kommastellen %digits" weight=6
     //% digits.min=0 digits.max=2 digits.defl=1
@@ -56,8 +54,9 @@ namespace car4
     export function wattmetertext() { return wattmeterV(1) + "V " + wattmetermA() }
 
     //% group="Wattmeter" advanced=true
-    //% block="Akku laden" weight=2
+    //% block="Akku laden < 7V" weight=2
     export function akkuleer() { return wattmeterV(1) < 7 } // kleiner als 7.0 Volt
+
 
 
     // ========== PRIVATE nur für wattmeter ==========

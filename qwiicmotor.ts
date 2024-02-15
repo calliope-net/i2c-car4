@@ -4,7 +4,7 @@ namespace car4
 */ { // qwiicmotor.ts
 
     // I²C Adresse Motor Modul
-  export  const i2cMotor = 0x5D
+    export const i2cMotor = 0x5D
     // Register
     const MA_DRIVE = 0x20 // 0x00..0xFF Default 0x80
     //const MB_DRIVE = 0x21
@@ -13,7 +13,8 @@ namespace car4
     const FSAFE_TIME = 0x76 // This register sets the watchdog timeout time, from 10 ms to 2.55 seconds.
     const CONTROL_1 = 0x78 // 0x01: Reset the processor now.
 
-    export let n_Motor: number
+    export let n_MotorA: number
+
 
 
     //% group="Motor"
@@ -45,11 +46,15 @@ namespace car4
     //% block="Motor A (0 ↓ 128 ↑ 255) %speed (128 ist STOP)" weight=4
     //% speed.min=0 speed.max=255 speed.defl=128
     export function motorA255(speed: number) {
-        if (between(speed, 0, 255))
-            pins.i2cWriteBuffer(i2cMotor, Buffer.fromArray([MA_DRIVE, speed]))
-        else
-            pins.i2cWriteBuffer(i2cMotor, Buffer.fromArray([MA_DRIVE, 128]))
+        if (between(speed, 0, 255) && speed != n_MotorA) {
+            n_MotorA = speed
+            pins.i2cWriteBuffer(i2cMotor, Buffer.fromArray([MA_DRIVE, n_MotorA]))
+        } 
     }
+
+    //% group="Motor"
+    //% block="Motor A Speed" weight=3
+    export function motorSpeed() { return n_MotorA }
 
     //% group="Motor"
     //% block="watchdog timeout %time * 10ms" weight=2

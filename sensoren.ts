@@ -13,15 +13,24 @@ namespace car4
     // Event Handler
     pins.onPulsed(pinEncoder, PulseValue.Low, function () {
         // Encoder 63.3 Impulse pro U/Motorwelle
-        if (n_Motor >= 128) n_Encoder += 1 // vorwärts
+        if (n_MotorA >= 128) n_Encoder += 1 // vorwärts
         else n_Encoder -= 1 // rückwärts
     })
 
 
 
+    //% group="Encoder" subcategory="Sensoren"
+    //% block="Fahrstrecke %pVergleich %cm cm" weight=8
+    export function encoder_vergleich(pVergleich: eVergleich, cm: number) {
+        switch (pVergleich) {
+            case eVergleich.gt: return encoder_cm() > cm
+            case eVergleich.lt: return encoder_cm() < cm
+            default: return false
+        }
+    }
 
     //% group="Encoder" subcategory="Sensoren"
-    //% block="Encoder cm" weight=6
+    //% block="Fahrstrecke cm" weight=6
     export function encoder_cm() {
         // 63.3 Motorwelle * (26/14) Zahnräder / (8cm * PI) Rad Umfang = 4.6774502 cm
         // Test: 946 Impulse = 200 cm
@@ -127,7 +136,54 @@ namespace car4
 
 
 
+    // ========== group="warten" subcategory="Sensoren"
+
+    //% group="warten" subcategory="Sensoren"
+    //% block="warte bis %bedingung || Pause %ms ms" weight=2
+    //% ms.defl=20
+    export function wartebis(bedingung: boolean, ms?: number) {
+        while (!bedingung) {
+            basic.pause(ms)
+        }
+    }
+
+    //% group="warten" subcategory="Sensoren"
+    //% block="warte %sekunden Sekunden" weight=1
+    //% sekunden.shadow=car4_ePause
+    export function pauseSekunden(sekunden: number) { basic.pause(sekunden * 1000) }
+
+
+
     // ========== enums
+
+    export enum ePause {
+        //% block="0.5"
+        p05 = 5,
+        //% block="1"
+        p1 = 10,
+        //% block="2"
+        p2 = 20,
+        //% block="3"
+        p3 = 30,
+        //% block="4"
+        p4 = 40,
+        //% block="5"
+        p5 = 50,
+        //% block="10"
+        p10 = 100,
+        //% block="15"
+        p15 = 150,
+        //% block="20"
+        p20 = 200,
+        //% block="30"
+        p30 = 300,
+        //% block="45"
+        p45 = 450,
+        //% block="60"
+        p60 = 600
+    }
+    //% blockId=car4_ePause block="%pPause" blockHidden=true
+    export function car4_ePause(pPause: ePause): number { return pPause / 10 }
 
     export enum eVergleich {
         //% block=">"
