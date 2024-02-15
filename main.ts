@@ -1,3 +1,10 @@
+input.onButtonEvent(Button.A, input.buttonEventClick(), function () {
+    if (car4.spursensor(car4.elr.links, car4.ehd.dunkel)) {
+        basic.setLedColor(0x00ff00)
+    } else {
+        basic.setLedColor(0xff0000)
+    }
+})
 radio.onReceivedBuffer(function (Datenpaket) {
     car4.onReceivedBuffer(Datenpaket)
 })

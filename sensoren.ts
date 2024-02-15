@@ -3,6 +3,8 @@ namespace car4
 /*
 */ { // sensoren.ts
 
+    // ========== Encoder ==========
+
     let n_Encoder: number = 0
     let n_EncoderFaktor = 63.3 * (26 / 14) / (8 * Math.PI) // 63.3 Motorwelle * (26/14) Zahnräder / (8cm * PI) Rad Umfang = 4.6774502 cm
 
@@ -37,6 +39,30 @@ namespace car4
 
 
 
+    // ========== Spursensor ==========
+
+    let n_Spur_rechts: boolean = true
+    let n_Spur_links: boolean = true
+
+    pins.onPulsed(pinSpurlinks, PulseValue.High, function () { n_Spur_links = true }) // 1 weiß
+    pins.onPulsed(pinSpurlinks, PulseValue.Low, function () { n_Spur_links = false }) // 0 schwarz
+    pins.onPulsed(pinSpurrechts, PulseValue.High, function () { n_Spur_links = true })
+    pins.onPulsed(pinSpurrechts, PulseValue.Low, function () { n_Spur_links = false })
+
+
+    //% group="Spursensor" subcategory="Sensoren"
+    //% block="Spursensor %plr %phd"
+    export function spursensor(plr: elr, phd: ehd) {
+        if (plr == elr.links)
+            return n_Spur_links !== (phd == ehd.dunkel)
+        else if (plr == elr.rechts)
+            return n_Spur_rechts !== (phd == ehd.dunkel)
+        else
+            return false
+    }
+
+
+    // ========== Ultraschall ==========
 
     // adapted to Calliope mini V2 Core by M.Klein 17.09.2020
     /**
@@ -102,5 +128,7 @@ namespace car4
         //% block="<"
         lt
     }
+    export enum elr { links, rechts }
+    export enum ehd { hell, dunkel }
 
 } // sensoren.ts
