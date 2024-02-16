@@ -13,7 +13,7 @@ namespace car4
     const FSAFE_TIME = 0x76 // This register sets the watchdog timeout time, from 10 ms to 2.55 seconds.
     const CONTROL_1 = 0x78 // 0x01: Reset the processor now.
 
-    export let n_MotorA: number
+    let n_MotorA = 128
 
 
 

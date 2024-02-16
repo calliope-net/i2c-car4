@@ -14,10 +14,10 @@ namespace car4
     // Event Handler
     pins.onPulsed(pinEncoder, PulseValue.Low, function () {
         // Encoder 63.3 Impulse pro U/Motorwelle
-        if (n_MotorA >= 128) n_Encoder += 1 // vorwärts
+        if (motorAget() >= 128) n_Encoder += 1 // vorwärts
         else n_Encoder -= 1 // rückwärts
 
-        if (n_EncoderEventValue > 0 && Math.abs(encoder_cm()) >= n_EncoderEventValue) {
+        if (n_EncoderEventValue > 0 && Math.abs(encoder_get(eEncoderEinheit.cm)) >= n_EncoderEventValue) {
             n_EncoderEventValue = 0 // Ereignis nur einmalig auslösen, wieder aktivieren mit encoder_reset
             control.raiseEvent(encoder_EventSource(), EventBusValue.MICROBIT_EVT_ANY)
         }
@@ -44,19 +44,19 @@ namespace car4
     //% block="Fahrstrecke %pVergleich %cm cm" weight=7
     export function encoder_vergleich(pVergleich: eVergleich, cm: number) {
         switch (pVergleich) {
-            case eVergleich.gt: return encoder_cm() > cm
-            case eVergleich.lt: return encoder_cm() < cm
+            case eVergleich.gt: return encoder_get(eEncoderEinheit.cm) > cm
+            case eVergleich.lt: return encoder_get(eEncoderEinheit.cm) < cm
             default: return false
         }
     }
 
     // group="Encoder" subcategory="Sensoren"
     // block="Fahrstrecke cm" weight=6
-    export function encoder_cm() {
+    /* export function encoder_cm() {
         // 63.3 Motorwelle * (26/14) Zahnräder / (8cm * PI) Rad Umfang = 4.6774502 cm
         // Test: 946 Impulse = 200 cm
         return n_Encoder / n_EncoderFaktor
-    }
+    } */
 
     //% group="Encoder" subcategory="Sensoren"
     //% block="Encoder %pEncoderEinheit" weight=4
@@ -64,7 +64,7 @@ namespace car4
         if (pEncoderEinheit == eEncoderEinheit.cm)
             // 63.3 Motorwelle * (26/14) Zahnräder / (8cm * PI) Rad Umfang = 4.6774502 cm
             // Test: 946 Impulse = 200 cm
-            return n_Encoder / n_EncoderFaktor
+            return Math.round(n_Encoder / n_EncoderFaktor)
         else
             return n_Encoder
     }
@@ -130,7 +130,7 @@ namespace car4
         control.waitMicros(20);
         pins.digitalWritePin(pinUltraschall, 0);
 
-        return pins.pulseIn(pinUltraschall, PulseValue.High, 50000) * 0.0263793
+        return Math.round(pins.pulseIn(pinUltraschall, PulseValue.High, 50000) * 0.0263793)
 
         //duration = pins.pulseIn(pin, PulseValue.High, 50000); // Max duration 50 ms
 
