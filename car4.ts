@@ -23,7 +23,7 @@ namespace car4
     //const i2cMotor = qwiicmotor.eADDR.Motor_x5D
     //const i2cWattmeter = wattmeter.eADDR.Watt_x45
 
-    let n_Simulator: boolean = ("€".charCodeAt(0) == 8364)
+    const n_Simulator: boolean = ("€".charCodeAt(0) == 8364)
     let n_Log = "CaR4" // Anzeige auf Display nach Start
     let n_Servo_geradeaus = 90 // Winkel für geradeaus wird beim Start eingestellt
     let n_ServoWinkel = 90 // aktuell eingestellter Winkel
@@ -42,11 +42,12 @@ namespace car4
     // ========== group="beim Start"
 
     //% group="beim Start"
-    //% block="CaR4 beim Start Funkgruppe %funkgruppe Servo ↑ %winkel °" weight=8
+    //% block="CaR4 beim Start Funkgruppe %funkgruppe Servo ↑ %winkel ° || Calibration %calibration_value " weight=8
     //% funkgruppe.min=0 funkgruppe.max=255 funkgruppe.defl=240
     //% winkel.min=81 winkel.max=99 winkel.defl=90
+    //% calibration_value.defl=4096
     //% inlineInputMode=inline 
-    export function beimStart(funkgruppe: number, winkel: number) {
+    export function beimStart(funkgruppe: number, winkel: number, calibration_value?: number) {
         let tx: string
 
         // Parameter
@@ -58,13 +59,14 @@ namespace car4
 
         // I²C Module initialisieren und Fehler anzeigen
         if (!n_Simulator) {
-            if (!wattmeterReset(4096)) {
-                tx = Buffer.fromArray([i2cWattmeter]).toHex()
-                n_Log += " " + tx
-                basic.showString(tx) // zeige fehlerhafte i2c-Adresse als HEX
-            } else if (wattmeterakkuleer()) {
-                n_Log += " Akku laden"
-            }
+            if (calibration_value != 0)
+                if (!wattmeterReset(calibration_value)) {
+                    tx = Buffer.fromArray([i2cWattmeter]).toHex()
+                    n_Log += " " + tx
+                    basic.showString(tx) // zeige fehlerhafte i2c-Adresse als HEX
+                } else if (wattmeterakkuleer()) {
+                    n_Log += " Akku laden"
+                }
 
             if (!motorReset()) {
                 tx = Buffer.fromArray([i2cMotor]).toHex()
@@ -125,7 +127,7 @@ namespace car4
 
 
 
-// ========== group="Text" advanced=true
+    // ========== group="Text" advanced=true
 
     export enum eAlign {
         //% block="linksbündig"

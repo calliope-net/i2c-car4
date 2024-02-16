@@ -61,7 +61,13 @@ namespace car4
     //% group="Bluetooth empfangen" subcategory="Bluetooth"
     //% block="Datenpaket enthält %pOffset" weight=8
     export function receivedBuffer_Contains(pOffset: eBuffer): boolean {
-        return n_receivedBuffer19 && n_receivedBuffer19.length > pOffset
+        if (n_receivedBuffer19 && n_receivedBuffer19.length > pOffset)
+            switch (pOffset) {
+                case eBuffer.b1_Servo: return (between(n_receivedBuffer19.getUint8(pOffset), 45, 135))
+                default: return true
+            }
+        else
+            return false
     }
 
     //% group="Bluetooth empfangen" subcategory="Bluetooth"
@@ -69,6 +75,16 @@ namespace car4
     export function receivedBuffer_getUint8(pOffset: eBuffer) {
         if (receivedBuffer_Contains(pOffset)) {
             return n_receivedBuffer19.getUint8(pOffset)
+            /* let b = n_receivedBuffer19.getUint8(pOffset)
+            switch (pOffset) {
+                case eBuffer.b1_Servo: {
+                    if (between(b, 90, 135))
+                        return b
+                    else
+                        return 90
+                }
+                default: return b
+            } */
         } else
             return 0
     }
