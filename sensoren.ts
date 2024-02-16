@@ -81,7 +81,7 @@ namespace car4
     pins.onPulsed(pinSpurrechts, PulseValue.Low, function () { n_Spur_links = false })
 
     //% group="Spursensor" subcategory="Sensoren"
-    //% block="Spursensor %plr %phd"
+    //% block="Spursensor %plr %phd" weight=4
     export function spursensor(plr: elr, phd: ehd) {
         switch (plr) {
             case elr.links: return n_Spur_links !== (phd == ehd.dunkel) // !== XOR (eine Seite ist true aber nicht beide)
@@ -96,10 +96,10 @@ namespace car4
              return false */
     }
 
-  //% group="Spursensor" subcategory="Sensoren"
-    //% block="Spursensor 00 01 10 11"
-    export function spursensor_get(){
-
+    //% group="Spursensor" subcategory="Sensoren"
+    //% block="Spursensor 00 01 10 11" weight=2
+    export function spursensor_get() {
+        return (n_Spur_links ? 2 : 0) + (n_Spur_rechts ? 1 : 0)
     }
 
 

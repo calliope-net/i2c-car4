@@ -140,7 +140,7 @@ namespace car4
     }
 
     //% group="Text" advanced=true
-    //% block="format %pText || Länge %len %pAlign"
+    //% block="format %pText || Länge %len %pAlign" weight=4
     //% len.min=1 len.max=20 len.defl=4
     export function format(pText: any, len?: number, pAlign?: eAlign) {
         let text: string = convertToText(pText)
@@ -151,6 +151,12 @@ namespace car4
         else if (text.length < len)
             text = text + "                    ".substr(0, len - text.length)
         return text
+    }
+
+    //% group="Text" advanced=true
+    //% block="hex %a" weight=2
+    export function hex(a: number[]) {
+        return Buffer.fromArray(a).toHex()
     }
 
 }
