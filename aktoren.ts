@@ -21,16 +21,19 @@ namespace car4
 
 
     //% group="Licht" subcategory="Aktoren"
-    //% block="Licht %pON" weight=3
-    //% pON.shadow="toggleOnOff"
-    export function licht(pON: boolean) {
-        n_Licht = pON
-        pins.digitalWritePin(pinLicht, pON ? 0 : 1)
+    //% block="Licht %pON || blinken %pBlink" weight=3
+    //% pON.shadow="toggleOnOff" pBlink.shadow="toggleOnOff"
+    export function licht(pON: boolean, pBlink = false) {
+        if (pON && pBlink)
+            n_Licht = !n_Licht
+        else
+            n_Licht = pON
+        pins.digitalWritePin(pinLicht, n_Licht ? 0 : 1)
     }
 
     //% group="Licht" subcategory="Aktoren"
     //% block="Licht an ?" weight=2
-    export function getlicht() { return n_Licht }
+    export function licht_get() { return n_Licht }
 
 
 

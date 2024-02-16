@@ -50,8 +50,8 @@ namespace car4
         }
     }
 
-    //% group="Encoder" subcategory="Sensoren"
-    //% block="Fahrstrecke cm" weight=6
+    // group="Encoder" subcategory="Sensoren"
+    // block="Fahrstrecke cm" weight=6
     export function encoder_cm() {
         // 63.3 Motorwelle * (26/14) Zahnräder / (8cm * PI) Rad Umfang = 4.6774502 cm
         // Test: 946 Impulse = 200 cm
@@ -59,8 +59,15 @@ namespace car4
     }
 
     //% group="Encoder" subcategory="Sensoren"
-    //% block="Encoder Impulse" weight=4
-    export function encoder_get() { return n_Encoder }
+    //% block="Encoder %pEncoderEinheit" weight=4
+    export function encoder_get(pEncoderEinheit: eEncoderEinheit) {
+        if (pEncoderEinheit == eEncoderEinheit.cm)
+            // 63.3 Motorwelle * (26/14) Zahnräder / (8cm * PI) Rad Umfang = 4.6774502 cm
+            // Test: 946 Impulse = 200 cm
+            return n_Encoder / n_EncoderFaktor
+        else
+            return n_Encoder
+    }
 
 
     // ========== group="Spursensor" subcategory="Sensoren"
@@ -207,6 +214,7 @@ namespace car4
         //% block="<"
         lt
     }
+    export enum eEncoderEinheit { cm, Impulse }
     export enum elr { links, rechts }
     export enum ehd { hell, dunkel }
 

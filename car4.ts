@@ -79,8 +79,8 @@ namespace car4
         pins.setPull(pinEncoder, PinPullMode.PullUp) // Encoder PIN Eingang PullUp
 
         // in bluetooth.ts:
-        n_connected = false
-        n_runningTime = input.runningTime() // Laufzeit
+        bluetooth_beimStart()
+      
 
     }
 
