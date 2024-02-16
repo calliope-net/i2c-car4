@@ -26,8 +26,8 @@ namespace car4
     //% group="Motor"
     //% block="Motor Power %pON" weight=8
     //% pON.shadow="toggleOnOff"
-    export function motorON(pON: boolean): boolean {
-        return pins.i2cWriteBuffer(i2cMotor, Buffer.fromArray([DRIVER_ENABLE, pON ? 0x01 : 0x00])) == 0
+    export function motorON(pON: boolean) {
+        pins.i2cWriteBuffer(i2cMotor, Buffer.fromArray([DRIVER_ENABLE, pON ? 0x01 : 0x00]))
     }
 
     //% group="Motor"
@@ -49,7 +49,7 @@ namespace car4
         if (between(speed, 0, 255) && speed != n_MotorA) {
             n_MotorA = speed
             pins.i2cWriteBuffer(i2cMotor, Buffer.fromArray([MA_DRIVE, n_MotorA]))
-        } 
+        }
     }
 
     //% group="Motor"

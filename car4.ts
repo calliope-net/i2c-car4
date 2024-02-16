@@ -95,7 +95,7 @@ namespace car4
     // ========== group="Servo"
 
     //% group="Servo"
-    //% block="Servo (45° ↖ 90° ↗ 135°) %winkel °"
+    //% block="Servo (45° ↖ 90° ↗ 135°) %winkel °" weight=4
     //% winkel.min=45 winkel.max=135 winkel.defl=90
     export function servo(winkel: number) {
         if (between(winkel, 45, 135) && n_ServoWinkel != winkel) {
@@ -103,6 +103,9 @@ namespace car4
             pins.servoWritePin(pinServo, winkel + n_Servo_geradeaus - 90)
         }
     }
+    //% group="Servo"
+    //% block="Servo (45° ↖ 90° ↗ 135°)" weight=2
+    export function servo_get() { return n_ServoWinkel }
 
 
 
