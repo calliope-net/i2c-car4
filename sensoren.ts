@@ -96,6 +96,11 @@ namespace car4
              return false */
     }
 
+  //% group="Spursensor" subcategory="Sensoren"
+    //% block="Spursensor 00 01 10 11"
+    export function spursensor_get(){
+
+    }
 
 
     // ========== group="Ultraschall" subcategory="Sensoren"
