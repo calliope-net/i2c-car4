@@ -80,7 +80,7 @@ namespace car4
 
         // in bluetooth.ts:
         bluetooth_beimStart()
-      
+
 
     }
 
@@ -112,12 +112,40 @@ namespace car4
 
 
 
+
+    // ========== advanced=true ==========
+
     // ========== group="Logik" advanced=true
 
     //% group="Logik" advanced=true
     //% block="%i0 zwischen %i1 und %i2" weight=1
     export function between(i0: number, i1: number, i2: number): boolean {
         return (i0 >= i1 && i0 <= i2)
+    }
+
+
+
+// ========== group="Text" advanced=true
+
+    export enum eAlign {
+        //% block="linksbündig"
+        left,
+        //% block="rechtsbündig"
+        right
+    }
+
+    //% group="Text" advanced=true
+    //% block="format %pText || Länge %len %pAlign"
+    //% len.min=1 len.max=20 len.defl=4
+    export function format(pText: any, len?: number, pAlign?: eAlign) {
+        let text: string = convertToText(pText)
+        if (text.length > len)
+            text = text.substr(0, len)
+        else if (text.length < len && pAlign == eAlign.right)
+            text = "                    ".substr(0, len - text.length) + text
+        else if (text.length < len)
+            text = text + "                    ".substr(0, len - text.length)
+        return text
     }
 
 }

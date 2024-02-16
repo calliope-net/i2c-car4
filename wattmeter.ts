@@ -50,8 +50,8 @@ namespace car4
     }
 
     //% group="Wattmeter" advanced=true
-    //% block="V und mA als Text" weight=3
-    export function wattmetertext() { return wattmeterV(1) + "V " + wattmetermA() }
+    //% block="V und mA als Text (8)" weight=3
+    export function wattmetertext() { return format(wattmeterV(1), 3, eAlign.right) + "V" + format(wattmetermA(), 4, eAlign.right) }
 
     //% group="Wattmeter" advanced=true
     //% block="Akku laden < 7V" weight=2
