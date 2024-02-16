@@ -71,21 +71,21 @@ namespace car4
 
 
     // ========== group="Spursensor" subcategory="Sensoren"
-
+    /*
     let n_Spur_rechts: boolean
     let n_Spur_links: boolean
-
-    pins.onPulsed(pinSpurlinks, PulseValue.High, function () { n_Spur_links = true }) // 1 weiß
-    pins.onPulsed(pinSpurlinks, PulseValue.Low, function () { n_Spur_links = false }) // 0 schwarz
-    pins.onPulsed(pinSpurrechts, PulseValue.High, function () { n_Spur_links = true })
-    pins.onPulsed(pinSpurrechts, PulseValue.Low, function () { n_Spur_links = false })
-
+ 
+        pins.onPulsed(pinSpurlinks, PulseValue.High, function () { n_Spur_links = true }) // 1 weiß
+        pins.onPulsed(pinSpurlinks, PulseValue.Low, function () { n_Spur_links = false }) // 0 schwarz
+        pins.onPulsed(pinSpurrechts, PulseValue.High, function () { n_Spur_links = true })
+        pins.onPulsed(pinSpurrechts, PulseValue.Low, function () { n_Spur_links = false })
+     */
     //% group="Spursensor" subcategory="Sensoren"
     //% block="Spursensor %plr %phd" weight=4
     export function spursensor(plr: elr, phd: ehd) {
         switch (plr) {
-            case elr.links: return n_Spur_links !== (phd == ehd.dunkel) // !== XOR (eine Seite ist true aber nicht beide)
-            case elr.rechts: return n_Spur_rechts !== (phd == ehd.dunkel)
+            case elr.links: return (pins.digitalReadPin(pinSpurlinks) == 1) !== (phd == ehd.dunkel) // !== XOR (eine Seite ist true aber nicht beide)
+            case elr.rechts: return (pins.digitalReadPin(pinSpurrechts) == 1) !== (phd == ehd.dunkel)
             default: return false
         }
         /*  if (plr == elr.links)
@@ -99,7 +99,8 @@ namespace car4
     //% group="Spursensor" subcategory="Sensoren"
     //% block="Spursensor 00 01 10 11" weight=2
     export function spursensor_get() {
-        return (n_Spur_links ? 2 : 0) + (n_Spur_rechts ? 1 : 0)
+        //return (n_Spur_links ? 2 : 0) + (n_Spur_rechts ? 1 : 0)
+        return pins.digitalReadPin(pinSpurlinks) * 2 + pins.digitalReadPin(pinSpurrechts)
     }
 
 

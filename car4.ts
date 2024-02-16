@@ -154,9 +154,23 @@ namespace car4
     }
 
     //% group="Text" advanced=true
-    //% block="hex %a" weight=2
+    //% block="hex %a" weight=3
     export function hex(a: number[]) {
         return Buffer.fromArray(a).toHex()
     }
+
+    //% group="Text" advanced=true
+    //% block="bin %n || Länge %len" weight=2
+    //% length.min=2 length.max=8 len.defl=2
+    export function bin(n: number, len?: number) {
+        let ht: string = ""
+        let hi: number = Math.trunc(n)
+        while (hi > 0) {
+            ht = "01".charAt(hi % 2) + ht
+            hi = hi >> 1
+        }
+        return ("00000000" + ht).substr(-len) // Anzahl Binärziffern von rechts
+    }
+
 
 }

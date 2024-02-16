@@ -37,13 +37,13 @@ namespace car4
     }
 
     //% group="Bluetooth Verbindung" subcategory="Bluetooth"
-    //% block="Bluetooth ist verbunden %connected" weight=3
+    //% block="Bluetooth connected %connected" weight=3
     //% connected.shadow="toggleYesNo"
     export function setConnected(connected: boolean) { n_connected = connected }
 
 
     //% group="Bluetooth Verbindung" subcategory="Bluetooth"
-    //% block="ist Bluetooth verbunden ?" weight=2
+    //% block="Bluetooth connected" weight=2
     export function isConnected() { return n_connected }
 
 
