@@ -7,20 +7,41 @@ namespace car4
 
     // ========== group="Encoder" subcategory="Sensoren"
 
-    let n_Encoder: number = 0
+    let n_Encoder: number = 0 // Impuls Zähler
     let n_EncoderFaktor = 63.3 * (26 / 14) / (8 * Math.PI) // 63.3 Motorwelle * (26/14) Zahnräder / (8cm * PI) Rad Umfang = 4.6774502 cm
+    let n_EncoderEventValue: number = 0 // löst Event aus bei Zähler in cm
 
     // Event Handler
     pins.onPulsed(pinEncoder, PulseValue.Low, function () {
         // Encoder 63.3 Impulse pro U/Motorwelle
         if (n_MotorA >= 128) n_Encoder += 1 // vorwärts
         else n_Encoder -= 1 // rückwärts
+
+        if (n_EncoderEventValue > 0 && Math.abs(encoder_cm()) >= n_EncoderEventValue) {
+            n_EncoderEventValue = 0 // Ereignis nur einmalig auslösen, wieder aktivieren mit encoder_reset
+            control.raiseEvent(encoder_EventSource(), EventBusValue.MICROBIT_EVT_ANY)
+        }
     })
+
+
+    //% group="Encoder" subcategory="Sensoren"
+    //% block="Encoder Reset || Ereignis auslösen bei %pEncoderEventValue cm" weight=9
+    //% pEncoderEventValue.defl=0
+    export function encoder_reset(pEncoderEventValue = 0) {
+        n_Encoder = 0 // Impuls Zähler zurück setzen
+        if (pEncoderEventValue > 0) n_EncoderEventValue = pEncoderEventValue
+        else n_EncoderEventValue = 0
+    }
+
+    //% group="Encoder" subcategory="Sensoren"
+    //% block="Encoder Ereignis Quelle" weight=8
+    export function encoder_EventSource() { return 16022 }
+
 
 
 
     //% group="Encoder" subcategory="Sensoren"
-    //% block="Fahrstrecke %pVergleich %cm cm" weight=8
+    //% block="Fahrstrecke %pVergleich %cm cm" weight=7
     export function encoder_vergleich(pVergleich: eVergleich, cm: number) {
         switch (pVergleich) {
             case eVergleich.gt: return encoder_cm() > cm
@@ -40,11 +61,6 @@ namespace car4
     //% group="Encoder" subcategory="Sensoren"
     //% block="Encoder Impulse" weight=4
     export function encoder_get() { return n_Encoder }
-
-    //% group="Encoder" subcategory="Sensoren"
-    //% block="Encoder Reset" weight=2
-    export function encoder_reset() { n_Encoder = 0 }
-
 
 
     // ========== group="Spursensor" subcategory="Sensoren"

@@ -23,8 +23,10 @@ namespace car4
     //const i2cMotor = qwiicmotor.eADDR.Motor_x5D
     //const i2cWattmeter = wattmeter.eADDR.Watt_x45
 
-    let n_Servo_geradeaus = 90 // Winkel für geradeaus
-    let n_ServoWinkel: number
+    let n_Simulator: boolean = ("€".charCodeAt(0) == 8364)
+    let n_Log = "CaR4" // Anzeige auf Display nach Start
+    let n_Servo_geradeaus = 90 // Winkel für geradeaus wird beim Start eingestellt
+    let n_ServoWinkel = 90 // aktuell eingestellter Winkel
 
     //let n_Connected: boolean
     //let iLaufzeit: number // ms seit Start
@@ -40,11 +42,12 @@ namespace car4
     // ========== group="beim Start"
 
     //% group="beim Start"
-    //% block="CaR4 beim Start Funkgruppe %funkgruppe Servo ↑ %winkel °"
+    //% block="CaR4 beim Start Funkgruppe %funkgruppe Servo ↑ %winkel °" weight=8
     //% funkgruppe.min=0 funkgruppe.max=255 funkgruppe.defl=240
     //% winkel.min=81 winkel.max=99 winkel.defl=90
     //% inlineInputMode=inline 
     export function beimStart(funkgruppe: number, winkel: number) {
+        let tx: string
 
         // Parameter
         radio.setGroup(funkgruppe)
@@ -52,14 +55,23 @@ namespace car4
 
         relay(true) // Relais an schalten (PIN 0)
 
+
         // I²C Module initialisieren und Fehler anzeigen
-        if (!wattmeterReset(4096))
-            basic.showString(Buffer.fromArray([i2cWattmeter]).toHex()) // zeige fehlerhafte i2c-Adresse als HEX
+        if (!n_Simulator) {
+            if (!wattmeterReset(4096)) {
+                tx = Buffer.fromArray([i2cWattmeter]).toHex()
+                n_Log += " " + tx
+                basic.showString(tx) // zeige fehlerhafte i2c-Adresse als HEX
+            } else if (wattmeterakkuleer()) {
+                n_Log += " Akku laden"
+            }
 
-        if (!motorReset())
-            basic.showString(Buffer.fromArray([i2cMotor]).toHex()) // zeige fehlerhafte i2c-Adresse als HEX
-
-
+            if (!motorReset()) {
+                tx = Buffer.fromArray([i2cMotor]).toHex()
+                n_Log += " " + tx
+                basic.showString(tx) // zeige fehlerhafte i2c-Adresse als HEX
+            }
+        }
 
         // PINs ab PIN 4:
         led.enable(false) // Matrix deaktivieren (erst nach showString), um PINs zu benutzen
@@ -72,9 +84,16 @@ namespace car4
 
     }
 
+    //% group="beim Start"
+    //% block="Protokoll Text" weight=4
+    export function logText() { return n_Log }
+
+
+
+    // ========== group="Servo"
 
     //% group="Servo"
-    //% block="Servo (↖45° ↑90° ↗135°) %winkel °"
+    //% block="Servo (45° ↖ 90° ↗ 135°) %winkel °"
     //% winkel.min=45 winkel.max=135 winkel.defl=90
     export function servo(winkel: number) {
         if (between(winkel, 45, 135) && n_ServoWinkel != winkel) {
@@ -85,31 +104,20 @@ namespace car4
 
 
 
+    // ========== group="Kommentar"
+
     //% group="Kommentar"
     //% block="// %text"
     export function comment(text: string): void { }
 
 
 
-    //% group="Logik (boolean)" advanced=true
+    // ========== group="Logik" advanced=true
+
+    //% group="Logik" advanced=true
     //% block="%i0 zwischen %i1 und %i2" weight=1
     export function between(i0: number, i1: number, i2: number): boolean {
         return (i0 >= i1 && i0 <= i2)
     }
 
-
-    /* 
-        export function i2cErrorLog(pADDR: number) {
-    
-        }
-    
-        function writeRegister(pADDR: number, pRegister: number, value: number, repeat: boolean = false): boolean {
-            return pins.i2cWriteBuffer(pADDR, Buffer.fromArray([pRegister, value]), repeat) == 0
-        }
-    
-        function readBuffer(pADDR: number, pRegister: number): Buffer {
-            pins.i2cWriteBuffer(pADDR, Buffer.fromArray([pRegister]), true)
-            return pins.i2cReadBuffer(pADDR, 1)
-        }
-     */
 }

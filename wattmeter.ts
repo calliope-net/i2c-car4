@@ -55,7 +55,7 @@ namespace car4
 
     //% group="Wattmeter" advanced=true
     //% block="Akku laden < 7V" weight=2
-    export function akkuleer() { return wattmeterV(1) < 7 } // kleiner als 7.0 Volt
+    export function wattmeterakkuleer() { return wattmeterV(1) < 7 } // kleiner als 7.0 Volt
 
 
 

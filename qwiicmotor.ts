@@ -33,7 +33,7 @@ namespace car4
     //% group="Motor"
     //% block="Motor A (-100 ↓ 0 ↑ 100) %speed \\%" weight=6
     //% speed.shadow="speedPicker" speed.defl=0
-    export function motorA(speed: number) {
+    export function motorA100(speed: number) {
         // constrain: speed zwischen -100 und +100 begrenzen
         // map: -100 -> 0 / 0 -> 127,5 / +100 -> 255
         // ceil: aufrunden, damit 127,5 = 128 = 0x80 Motor Stillstand
@@ -53,8 +53,8 @@ namespace car4
     }
 
     //% group="Motor"
-    //% block="Motor A Speed" weight=3
-    export function motorSpeed() { return n_MotorA }
+    //% block="Motor A (0 ↓ 128 ↑ 255)" weight=3
+    export function motorAget() { return n_MotorA }
 
     //% group="Motor"
     //% block="watchdog timeout %time * 10ms" weight=2
