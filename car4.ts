@@ -109,15 +109,6 @@ namespace car4
 
 
 
-    // ========== group="Kommentar"
-
-    //% group="Kommentar"
-    //% block="// %text"
-    export function comment(text: string): void { }
-
-
-
-
     // ========== advanced=true ==========
 
     // ========== group="Logik" advanced=true
@@ -172,5 +163,11 @@ namespace car4
         return ("00000000" + ht).substr(-len) // Anzahl Binärziffern von rechts
     }
 
+
+    // ========== group="Kommentar"
+
+    //% group="Kommentar" advanced=true
+    //% block="// %text"
+    export function comment(text: string): void { }
 
 }

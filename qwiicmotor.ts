@@ -11,6 +11,7 @@ namespace car4
     const DRIVER_ENABLE = 0x70 //  0x01: Enable, 0x00: Disable this driver
     const FSAFE_CTRL = 0x1F // Use to configure what happens when failsafe occurs.
     const FSAFE_TIME = 0x76 // This register sets the watchdog timeout time, from 10 ms to 2.55 seconds.
+    const STATUS_1 = 0x77 // This register uses bits to show status. Currently, only b0 is used.
     const CONTROL_1 = 0x78 // 0x01: Reset the processor now.
 
     let n_MotorA = 128
@@ -24,7 +25,30 @@ namespace car4
     }
 
     //% group="Motor"
-    //% block="Motor Power %pON" weight=8
+    //% block="Motor Status %pStatus" weight=8
+    export function motorStatus(): boolean {
+        /*
+        bool ready( void );
+        This function checks to see if the SCMD is done booting and is ready to receive commands. Use this
+        after .begin(), and don't progress to your main program until this returns true.
+        SCMD_STATUS_1: Read back basic program status
+            B0: 1 = Enumeration Complete
+            B1: 1 = Device busy
+            B2: 1 = Remote read in progress
+            B3: 1 = Remote write in progress
+            B4: Read state of enable pin U2.5"
+        */
+        //control.waitMicros(2000000) // 2 s lange Wartezeit
+        pins.i2cWriteBuffer(i2cMotor, Buffer.fromArray([STATUS_1]), true)
+        let statusByte = pins.i2cReadBuffer(i2cMotor, 1).getUint8(0)
+        //let statusByte = readBuffer2(pADDR, STATUS_1).getUint8(0)
+        //n_i2cError = 0 // Fehler ignorieren, kann passieren wenn Zeit zu kurz
+        return (statusByte & 0x01) != 0 && statusByte != 0xFF  // wait for ready flag and not 0xFF
+    }
+
+
+    //% group="Motor"
+    //% block="Motor Power %pON" weight=7
     //% pON.shadow="toggleOnOff"
     export function motorON(pON: boolean) {
         pins.i2cWriteBuffer(i2cMotor, Buffer.fromArray([DRIVER_ENABLE, pON ? 0x01 : 0x00]))
