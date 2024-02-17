@@ -6,6 +6,7 @@ namespace car4
     // I²C Adresse Motor Modul
     export const i2cMotor = 0x5D
     // Register
+    const ID = 0x01 // Reports hard-coded ID byte of 0xA9
     const MA_DRIVE = 0x20 // 0x00..0xFF Default 0x80
     //const MB_DRIVE = 0x21
     const DRIVER_ENABLE = 0x70 //  0x01: Enable, 0x00: Disable this driver
@@ -15,18 +16,30 @@ namespace car4
     const CONTROL_1 = 0x78 // 0x01: Reset the processor now.
 
     let n_MotorA = 128
-
+    let n_MotorReady = false
 
 
     //% group="Motor"
     //% block="Motor Reset" weight=9
     export function motorReset() {
-        return pins.i2cWriteBuffer(i2cMotor, Buffer.fromArray([CONTROL_1, 1])) == 0 // Reset the processor now.
+        pins.i2cWriteBuffer(i2cMotor, Buffer.fromArray([ID]), true)
+        if (pins.i2cReadBuffer(i2cMotor, 1).getUint8(0) == 0xA9) {
+            pins.i2cWriteBuffer(i2cMotor, Buffer.fromArray([CONTROL_1, 1])) // Reset the processor now.
+            for (let i = 0; i < 5; i += 1) {
+                // Wartezeit 2 s in getStatus-ready
+                pause(2000) // 2 s lange Wartezeit
+                if (motorStatus()) { // STATUS_1
+                    n_MotorReady = true
+                    break
+                }
+            }
+        }
+        return n_MotorReady
     }
 
-    //% group="Motor"
-    //% block="Motor Status %pStatus" weight=8
-    export function motorStatus(): boolean {
+    // group="Motor"
+    // block="Motor Status %pStatus" weight=8
+    function motorStatus(): boolean {
         /*
         bool ready( void );
         This function checks to see if the SCMD is done booting and is ready to receive commands. Use this
@@ -41,8 +54,6 @@ namespace car4
         //control.waitMicros(2000000) // 2 s lange Wartezeit
         pins.i2cWriteBuffer(i2cMotor, Buffer.fromArray([STATUS_1]), true)
         let statusByte = pins.i2cReadBuffer(i2cMotor, 1).getUint8(0)
-        //let statusByte = readBuffer2(pADDR, STATUS_1).getUint8(0)
-        //n_i2cError = 0 // Fehler ignorieren, kann passieren wenn Zeit zu kurz
         return (statusByte & 0x01) != 0 && statusByte != 0xFF  // wait for ready flag and not 0xFF
     }
 
@@ -51,7 +62,8 @@ namespace car4
     //% block="Motor Power %pON" weight=7
     //% pON.shadow="toggleOnOff"
     export function motorON(pON: boolean) {
-        pins.i2cWriteBuffer(i2cMotor, Buffer.fromArray([DRIVER_ENABLE, pON ? 0x01 : 0x00]))
+        if (n_MotorReady)
+            pins.i2cWriteBuffer(i2cMotor, Buffer.fromArray([DRIVER_ENABLE, pON ? 0x01 : 0x00]))
     }
 
     //% group="Motor"
@@ -70,10 +82,11 @@ namespace car4
     //% block="Motor A (0 ↓ 128 ↑ 255) %speed (128 ist STOP)" weight=4
     //% speed.min=0 speed.max=255 speed.defl=128
     export function motorA255(speed: number) {
-        if (between(speed, 0, 255) && speed != n_MotorA) {
-            n_MotorA = speed
-            pins.i2cWriteBuffer(i2cMotor, Buffer.fromArray([MA_DRIVE, n_MotorA]))
-        }
+        if (n_MotorReady)
+            if (between(speed, 0, 255) && speed != n_MotorA) {
+                n_MotorA = speed
+                pins.i2cWriteBuffer(i2cMotor, Buffer.fromArray([MA_DRIVE, n_MotorA]))
+            }
     }
 
     //% group="Motor"
@@ -84,9 +97,18 @@ namespace car4
     //% block="watchdog timeout %time * 10ms" weight=2
     //% time.min=0 time.max=255 time.defl=0
     export function setSafeTime(time: number) {
-        if (between(time, 0, 255))
-            pins.i2cWriteBuffer(i2cMotor, Buffer.fromArray([FSAFE_CTRL, 0x01])) // 1 -- Center output drive levels for 0 drive
-        pins.i2cWriteBuffer(i2cMotor, Buffer.fromArray([FSAFE_TIME, time])) // 0x76 0 ... 2,55 Sekunden
+        if (n_MotorReady) {
+            if (between(time, 0, 255)) {
+                pins.i2cWriteBuffer(i2cMotor, Buffer.fromArray([FSAFE_CTRL, 0x01])) // 1 -- Center output drive levels for 0 drive
+            }
+            pins.i2cWriteBuffer(i2cMotor, Buffer.fromArray([FSAFE_TIME, time])) // 0x76 0 ... 2,55 Sekunden
+        }
     }
+
+    /* 
+        function readRegister(pRegister: number) {
+            pins.i2cWriteBuffer(i2cMotor, Buffer.fromArray([pRegister]), true)
+            return pins.i2cReadBuffer(i2cMotor, 1).getUint8(0)
+        } */
 
 } // qwiicmotor.ts

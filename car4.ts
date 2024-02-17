@@ -24,9 +24,10 @@ namespace car4
     //const i2cWattmeter = wattmeter.eADDR.Watt_x45
 
     const n_Simulator: boolean = ("€".charCodeAt(0) == 8364)
-    let n_Log = "CaR4" // Anzeige auf Display nach Start
+    let n_Log = "" // Anzeige auf Display nach Start
     let n_Servo_geradeaus = 90 // Winkel für geradeaus wird beim Start eingestellt
     let n_ServoWinkel = 90 // aktuell eingestellter Winkel
+    let n_ready = false
 
     //let n_Connected: boolean
     //let iLaufzeit: number // ms seit Start
@@ -62,7 +63,7 @@ namespace car4
             if (calibration_value != 0)
                 if (!wattmeterReset(calibration_value)) {
                     tx = Buffer.fromArray([i2cWattmeter]).toHex()
-                    n_Log += " " + tx
+                    n_Log += tx + " "
                     basic.showString(tx) // zeige fehlerhafte i2c-Adresse als HEX
                 } else if (wattmeterakkuleer()) {
                     n_Log += " Akku laden"
@@ -70,7 +71,7 @@ namespace car4
 
             if (!motorReset()) {
                 tx = Buffer.fromArray([i2cMotor]).toHex()
-                n_Log += " " + tx
+                n_Log += tx + " "
                 basic.showString(tx) // zeige fehlerhafte i2c-Adresse als HEX
             }
         }
@@ -83,8 +84,17 @@ namespace car4
         // in bluetooth.ts:
         bluetooth_beimStart()
 
-
+        if (n_Log.length = 0) {
+            n_Log = "CaR 4 bereit"
+            n_ready = true
+        }
     }
+
+    //% group="beim Start"
+    //% block="CaR4 bereit" weight=6
+    export function car4ready() { return n_ready }
+
+
 
     //% group="beim Start"
     //% block="Protokoll Text" weight=4
