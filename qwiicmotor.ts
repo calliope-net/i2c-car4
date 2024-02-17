@@ -22,24 +22,30 @@ namespace car4
     //% group="Motor"
     //% block="Motor Reset" weight=9
     export function motorReset() {
-        pins.i2cWriteBuffer(i2cMotor, Buffer.fromArray([ID]), true)
-        if (pins.i2cReadBuffer(i2cMotor, 1).getUint8(0) == 0xA9) {
-            pins.i2cWriteBuffer(i2cMotor, Buffer.fromArray([CONTROL_1, 1])) // Reset the processor now.
-            for (let i = 0; i < 5; i += 1) {
-                // Wartezeit 2 s in getStatus-ready
-                pause(2000) // 2 s lange Wartezeit
-                if (motorStatus()) { // STATUS_1
-                    n_MotorReady = true
-                    break
-                }
-            }
-        }
-        return n_MotorReady
+        n_MotorReady = false
+        if (pins.i2cWriteBuffer(i2cMotor, Buffer.fromArray([ID]), true) == 0) {
+            if (pins.i2cReadBuffer(i2cMotor, 1).getUint8(0) == 0xA9) {
+                pins.i2cWriteBuffer(i2cMotor, Buffer.fromArray([CONTROL_1, 1])) // Reset the processor now.
+                /* 
+                for (let i = 0; i < 5; i += 1) {
+                    // Wartezeit 2 s in getStatus-ready
+                    pause(2000) // 2 s lange Wartezeit
+                    if (motorStatus()) { // STATUS_1
+                        n_MotorReady = true
+                        break
+                    }
+                } */
+                return true
+            } else return false
+        } else return false
+        //return n_MotorReady
     }
 
     // group="Motor"
-    // block="Motor Status %pStatus" weight=8
-    function motorStatus(): boolean {
+    // block="Motor bereit" weight=8
+    export function motorStatus(): boolean {
+        if (n_MotorReady)
+            return true
         /*
         bool ready( void );
         This function checks to see if the SCMD is done booting and is ready to receive commands. Use this
@@ -51,10 +57,26 @@ namespace car4
             B3: 1 = Remote write in progress
             B4: Read state of enable pin U2.5"
         */
-        //control.waitMicros(2000000) // 2 s lange Wartezeit
-        pins.i2cWriteBuffer(i2cMotor, Buffer.fromArray([STATUS_1]), true)
-        let statusByte = pins.i2cReadBuffer(i2cMotor, 1).getUint8(0)
-        return (statusByte & 0x01) != 0 && statusByte != 0xFF  // wait for ready flag and not 0xFF
+        else {
+            for (let i = 0; i < 5; i += 1) {
+                // Wartezeit 2 s in getStatus-ready
+                pause(2000) // 2 s lange Wartezeit
+                pins.i2cWriteBuffer(i2cMotor, Buffer.fromArray([STATUS_1]), true)
+                //let statusByte = pins.i2cReadBuffer(i2cMotor, 1).getUint8(0)
+
+                if ((pins.i2cReadBuffer(i2cMotor, 1).getUint8(0) & 0x01) == 1) { // STATUS_1
+                    n_MotorReady = true
+                    break
+                }
+            }
+            return n_MotorReady
+            /* 
+                        //control.waitMicros(2000000) // 2 s lange Wartezeit
+                        pins.i2cWriteBuffer(i2cMotor, Buffer.fromArray([STATUS_1]), true)
+                        let statusByte = pins.i2cReadBuffer(i2cMotor, 1).getUint8(0)
+                        return (statusByte & 0x01) != 0 && statusByte != 0xFF  // wait for ready flag and not 0xFF
+                         */
+        }
     }
 
 

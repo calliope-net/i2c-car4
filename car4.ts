@@ -49,7 +49,9 @@ namespace car4
     //% calibration_value.defl=4096
     //% inlineInputMode=inline 
     export function beimStart(funkgruppe: number, winkel: number, calibration_value?: number) {
+        let ex = false
         let tx: string
+        n_ready = false // CaR4 ist nicht bereit: Schleifen werden nicht abgearbeitet
 
         // Parameter
         radio.setGroup(funkgruppe)
@@ -62,14 +64,16 @@ namespace car4
         if (!n_Simulator) {
             if (calibration_value != 0)
                 if (!wattmeterReset(calibration_value)) {
+                    ex = true
                     tx = Buffer.fromArray([i2cWattmeter]).toHex()
                     n_Log += tx + " "
                     basic.showString(tx) // zeige fehlerhafte i2c-Adresse als HEX
                 } else if (wattmeterakkuleer()) {
-                    n_Log += " Akku laden"
+                    n_Log += "Akku laden "
                 }
 
             if (!motorReset()) {
+                ex = true
                 tx = Buffer.fromArray([i2cMotor]).toHex()
                 n_Log += tx + " "
                 basic.showString(tx) // zeige fehlerhafte i2c-Adresse als HEX
@@ -84,7 +88,7 @@ namespace car4
         // in bluetooth.ts:
         bluetooth_beimStart()
 
-        if (n_Log.length = 0) {
+        if (!ex) {
             n_Log = "CaR 4 bereit"
             n_ready = true
         }
@@ -92,7 +96,9 @@ namespace car4
 
     //% group="beim Start"
     //% block="CaR4 bereit" weight=6
-    export function car4ready() { return n_ready }
+    export function car4ready() {
+        return n_ready && motorStatus()
+    }
 
 
 
