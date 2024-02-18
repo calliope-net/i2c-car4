@@ -50,7 +50,7 @@ namespace car4
     //% inlineInputMode=inline 
     export function beimStart(funkgruppe: number, winkel: number, calibration_value?: number) {
         let ex = false
-        let tx: string
+        n_Log = "CaR 4"
         n_ready = false // CaR4 ist nicht bereit: Schleifen werden nicht abgearbeitet
 
         // Parameter
@@ -65,18 +65,16 @@ namespace car4
             if (calibration_value != 0)
                 if (!wattmeterReset(calibration_value)) {
                     ex = true
-                    tx = Buffer.fromArray([i2cWattmeter]).toHex()
-                    n_Log += tx + " "
-                    basic.showString(tx) // zeige fehlerhafte i2c-Adresse als HEX
+                    n_Log += " " + hex([i2cWattmeter])
+                    basic.showString(hex([i2cWattmeter])) // zeige fehlerhafte i2c-Adresse als HEX
                 } else if (wattmeterakkuleer()) {
-                    n_Log += "Akku laden "
+                    n_Log = "Akku laden " + wattmeterV().toString()
                 }
 
             if (!motorReset()) {
                 ex = true
-                tx = Buffer.fromArray([i2cMotor]).toHex()
-                n_Log += tx + " "
-                basic.showString(tx) // zeige fehlerhafte i2c-Adresse als HEX
+                n_Log += " " + hex([i2cMotor])
+                basic.showString(hex([i2cMotor])) // zeige fehlerhafte i2c-Adresse als HEX
             }
         }
 
@@ -88,10 +86,12 @@ namespace car4
         // in bluetooth.ts:
         bluetooth_beimStart()
 
-        if (!ex) {
+        n_ready = !ex
+
+        /* if (!ex) {
             n_Log = "CaR 4 bereit"
             n_ready = true
-        }
+        } */
     }
 
     //% group="beim Start"
@@ -139,15 +139,18 @@ namespace car4
 
     // ========== group="Text" advanced=true
 
+    //% group="Text" advanced=true
+    //% block="// %text" weight=9
+    export function comment(text: string): void { }
+
     export enum eAlign {
         //% block="linksbündig"
         left,
         //% block="rechtsbündig"
         right
     }
-
     //% group="Text" advanced=true
-    //% block="format %pText || Länge %len %pAlign" weight=4
+    //% block="format %pText || Länge %len %pAlign" weight=8
     //% len.min=1 len.max=20 len.defl=4
     export function format(pText: any, len?: number, pAlign?: eAlign) {
         let text: string = convertToText(pText)
@@ -161,13 +164,13 @@ namespace car4
     }
 
     //% group="Text" advanced=true
-    //% block="hex %a" weight=3
+    //% block="hex %a" weight=7
     export function hex(a: number[]) {
         return Buffer.fromArray(a).toHex()
     }
 
     //% group="Text" advanced=true
-    //% block="bin %n || Länge %len" weight=2
+    //% block="bin %n || Länge %len" weight=6
     //% length.min=2 length.max=8 len.defl=2
     export function bin(n: number, len?: number) {
         let ht: string = ""
@@ -179,11 +182,32 @@ namespace car4
         return ("00000000" + ht).substr(-len) // Anzahl Binärziffern von rechts
     }
 
+    export enum eStatuszeile {
+        //% block="(16) Motor, Servo, Spur, Encoder"
+        a,
+        //% block="(7) Entfernung, Helligkeit"
+        b,
+        //% block="(8) Wattmeter V und mA"
+        c
+    }
 
-    // ========== group="Kommentar"
-
-    //% group="Kommentar" advanced=true
-    //% block="// %text"
-    export function comment(text: string): void { }
-
+    //% group="Text" advanced=true
+    //% block="Statuszeile %pStatuszeile" weight=4
+    export function statuszeile1(pStatuszeile: eStatuszeile) {
+        switch (pStatuszeile) {
+            case eStatuszeile.a:
+                return format(motorAget(), 3, eAlign.right) +
+                    format(servo_get(), 4, eAlign.right) + " " +
+                    bin(spursensor_get()) + " " +
+                    format(encoder_get(eEncoderEinheit.Impulse), 5, eAlign.right)
+            case eStatuszeile.b:
+                return format(entfernung_cm(), 3, eAlign.right) +
+                    format(helligkeit_analog(), 4, eAlign.right)
+            case eStatuszeile.c:
+                return format(wattmeterV(1), 3, eAlign.right) + "V" +
+                    format(wattmetermA(), 4, eAlign.right)
+            default:
+                return ""
+        }
+    }
 }

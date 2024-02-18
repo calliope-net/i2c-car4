@@ -1,7 +1,7 @@
 
 namespace car4
 /*
-*/ { // radio.ts
+*/ { // bluetooth.ts
 
     let n_receivedBuffer19: Buffer
     let n_sendBuffer19: Buffer
@@ -98,4 +98,4 @@ namespace car4
     }
 
 
-} // radio.ts
+} // bluetooth.ts

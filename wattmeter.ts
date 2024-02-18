@@ -49,13 +49,16 @@ namespace car4
         return read_register(eRegister.REG_CURRENT).getNumber(NumberFormat.Int16BE, 0)
     }
 
-    //% group="Wattmeter" advanced=true
-    //% block="V und mA als Text (8)" weight=3
-    export function wattmetertext() { return format(wattmeterV(1), 3, eAlign.right) + "V" + format(wattmetermA(), 4, eAlign.right) }
+    // group="Wattmeter" advanced=true
+    // block="V und mA als Text (8)" weight=3
+    //function wattmetertext() { return format(wattmeterV(1), 3, eAlign.right) + "V" + format(wattmetermA(), 4, eAlign.right) }
 
     //% group="Wattmeter" advanced=true
     //% block="Akku laden < 7V" weight=2
-    export function wattmeterakkuleer() { return wattmeterV(1) < 7 } // kleiner als 7.0 Volt
+    export function wattmeterakkuleer() { // kleiner als 7.0 Volt
+        read_register(eRegister.REG_BUSVOLTAGE) // einmal mehr lesen, Wert stimmt bei ersten Mal nicht
+        return wattmeterV(1) < 7
+    }
 
 
 
