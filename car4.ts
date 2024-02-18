@@ -80,7 +80,8 @@ namespace car4
 
         // PINs ab PIN 4:
         led.enable(false) // Matrix deaktivieren (erst nach showString), um PINs zu benutzen
-        servo(n_Servo_geradeaus) // Servo PIN PWM
+        //servo(90) // Servo PIN PWM
+        pins.servoWritePin(pinServo, n_Servo_geradeaus)
         pins.setPull(pinEncoder, PinPullMode.PullUp) // Encoder PIN Eingang PullUp
 
         // in bluetooth.ts:
