@@ -12,12 +12,23 @@ namespace car4
     export enum eBuffer {
         b0_Motor,
         b1_Servo,
+        b2_Fahrstrecke,
+        b3_Bits,
+        b4,
+        b5,
+        b6,
+        b7
+    }
+
+    export enum eBit {
+        b0,
+        b1,
         b2,
         b3,
         b4,
         b5,
         b6,
-        b7
+        x80_MotorPower
     }
 
     export function bluetooth_beimStart() {
@@ -89,6 +100,18 @@ namespace car4
             return 0
     }
 
+    //% group="Bluetooth empfangen" subcategory="Bluetooth"
+    //% block="Bit lesen %pBit" weight=6
+    export function receivedBuffer_getBit(pBit: eBit) {
+        switch (pBit) {
+            case eBit.x80_MotorPower: return (receivedBuffer_getUint8(eBuffer.b3_Bits) & 0x80) == 0x80
+
+            default: return false
+        }
+    }
+
+
+/* 
     // ========== group="Bluetooth senden" subcategory="Bluetooth"
 
     //% group="Bluetooth senden" subcategory="Bluetooth"
@@ -96,6 +119,6 @@ namespace car4
     export function sendBuffer() {
         radio.sendBuffer(n_sendBuffer19)
     }
-
+ */
 
 } // bluetooth.ts

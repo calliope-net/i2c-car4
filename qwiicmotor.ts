@@ -15,8 +15,9 @@ namespace car4
     const STATUS_1 = 0x77 // This register uses bits to show status. Currently, only b0 is used.
     const CONTROL_1 = 0x78 // 0x01: Reset the processor now.
 
-    let n_MotorA = 128
     let n_MotorReady = false
+    let n_MotorON = false // aktueller Wert im Chip
+    let n_MotorA = 128    // aktueller Wert im Chip
 
 
     //% group="Motor"
@@ -83,9 +84,11 @@ namespace car4
     //% group="Motor"
     //% block="Motor Power %pON" weight=7
     //% pON.shadow="toggleOnOff"
-    export function motorON(pON: boolean) {
-        if (n_MotorReady)
-            pins.i2cWriteBuffer(i2cMotor, Buffer.fromArray([DRIVER_ENABLE, pON ? 0x01 : 0x00]))
+    export function motorON(pON: boolean) { // sendet nur wenn der Wert sich ändert
+        if (motorStatus() && (pON !== n_MotorON)) { // !== XOR eine Seite ist true aber nicht beide
+            n_MotorON = pON
+            pins.i2cWriteBuffer(i2cMotor, Buffer.fromArray([DRIVER_ENABLE, n_MotorON ? 0x01 : 0x00]))
+        }
     }
 
     //% group="Motor"
@@ -103,8 +106,8 @@ namespace car4
     //% group="Motor"
     //% block="Motor A (0 ↓ 128 ↑ 255) %speed (128 ist STOP)" weight=4
     //% speed.min=0 speed.max=255 speed.defl=128
-    export function motorA255(speed: number) {
-        if (n_MotorReady)
+    export function motorA255(speed: number) { // sendet nur wenn der Wert sich ändert
+        if (motorStatus())
             if (between(speed, 0, 255) && speed != n_MotorA) {
                 n_MotorA = speed
                 pins.i2cWriteBuffer(i2cMotor, Buffer.fromArray([MA_DRIVE, n_MotorA]))
@@ -119,7 +122,7 @@ namespace car4
     //% block="watchdog timeout %time * 10ms" weight=2
     //% time.min=0 time.max=255 time.defl=0
     export function setSafeTime(time: number) {
-        if (n_MotorReady) {
+        if (motorStatus()) {
             if (between(time, 0, 255)) {
                 pins.i2cWriteBuffer(i2cMotor, Buffer.fromArray([FSAFE_CTRL, 0x01])) // 1 -- Center output drive levels for 0 drive
             }

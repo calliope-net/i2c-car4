@@ -103,16 +103,10 @@ namespace car4
 
 
 
-    //% group="beim Start"
-    //% block="Protokoll Text" weight=4
-    export function logText() { return n_Log }
-
-
-
     // ========== group="Servo"
 
     //% group="Servo"
-    //% block="Servo (45° ↖ 90° ↗ 135°) %winkel °" weight=4
+    //% block="Servo (135° ↖ 90° ↗ 45°) %winkel °" weight=4
     //% winkel.min=45 winkel.max=135 winkel.defl=90
     export function servo(winkel: number) {
         if (between(winkel, 45, 135) && n_ServoWinkel != winkel) {
@@ -121,7 +115,7 @@ namespace car4
         }
     }
     //% group="Servo"
-    //% block="Servo (45° ↖ 90° ↗ 135°)" weight=2
+    //% block="Servo (135° ↖ 90° ↗ 45°)" weight=2
     export function servo_get() { return n_ServoWinkel }
 
 
@@ -144,58 +138,12 @@ namespace car4
     //% block="// %text" weight=9
     export function comment(text: string): void { }
 
-    export enum eAlign {
-        //% block="linksbündig"
-        left,
-        //% block="rechtsbündig"
-        right
-    }
     //% group="Text" advanced=true
-    //% block="format %pText || Länge %len %pAlign" weight=8
-    //% len.min=1 len.max=20 len.defl=4
-    export function format(pText: any, len?: number, pAlign?: eAlign) {
-        let text: string = convertToText(pText)
-        if (text.length > len)
-            text = text.substr(0, len)
-        else if (text.length < len && pAlign == eAlign.right)
-            text = "                    ".substr(0, len - text.length) + text
-        else if (text.length < len)
-            text = text + "                    ".substr(0, len - text.length)
-        return text
-    }
-
-    //% group="Text" advanced=true
-    //% block="hex %a" weight=7
-    export function hex(a: number[]) {
-        return Buffer.fromArray(a).toHex()
-    }
-
-    //% group="Text" advanced=true
-    //% block="bin %n || Länge %len" weight=6
-    //% length.min=2 length.max=8 len.defl=2
-    export function bin(n: number, len?: number) {
-        let ht: string = ""
-        let hi: number = Math.trunc(n)
-        while (hi > 0) {
-            ht = "01".charAt(hi % 2) + ht
-            hi = hi >> 1
-        }
-        return ("00000000" + ht).substr(-len) // Anzahl Binärziffern von rechts
-    }
-
-    export enum eStatuszeile {
-        //% block="(16) Motor, Servo, Spur, Encoder"
-        a,
-        //% block="(7) Entfernung, Helligkeit"
-        b,
-        //% block="(8) Wattmeter V und mA"
-        c
-    }
-
-    //% group="Text" advanced=true
-    //% block="Statuszeile %pStatuszeile" weight=4
+    //% block="Statuszeile %pStatuszeile" weight=8
     export function statuszeile1(pStatuszeile: eStatuszeile) {
         switch (pStatuszeile) {
+            case eStatuszeile.start:
+                return n_Log
             case eStatuszeile.a:
                 return format(motorAget(), 3, eAlign.right) +
                     format(servo_get(), 4, eAlign.right) + " " +
@@ -211,4 +159,59 @@ namespace car4
                 return ""
         }
     }
+
+    //% group="Text" advanced=true
+    //% block="format %pText || Länge %len %pAlign" weight=7
+    //% len.min=1 len.max=20 len.defl=4
+    export function format(pText: any, len?: number, pAlign?: eAlign) {
+        let text: string = convertToText(pText)
+        if (text.length > len)
+            text = text.substr(0, len)
+        else if (text.length < len && pAlign == eAlign.right)
+            text = "                    ".substr(0, len - text.length) + text
+        else if (text.length < len)
+            text = text + "                    ".substr(0, len - text.length)
+        return text
+    }
+
+    //% group="Text" advanced=true
+    //% block="hex %a" weight=6
+    export function hex(a: number[]) {
+        return Buffer.fromArray(a).toHex()
+    }
+
+    //% group="Text" advanced=true
+    //% block="bin %n || Länge %len" weight=5
+    //% length.min=2 length.max=8 len.defl=2
+    export function bin(n: number, len?: number) {
+        let ht: string = ""
+        let hi: number = Math.trunc(n)
+        while (hi > 0) {
+            ht = "01".charAt(hi % 2) + ht
+            hi = hi >> 1
+        }
+        return ("00000000" + ht).substr(-len) // Anzahl Binärziffern von rechts
+    }
+
+
+
+    // ========== ENUMs
+
+    export enum eAlign {
+        //% block="linksbündig"
+        left,
+        //% block="rechtsbündig"
+        right
+    }
+    export enum eStatuszeile {
+        //% block="Protokoll"
+        start,
+        //% block="(16) Motor, Servo, Spur, Encoder"
+        a,
+        //% block="(7) Entfernung, Helligkeit"
+        b,
+        //% block="(8) Wattmeter V und mA"
+        c
+    }
+
 }

@@ -88,12 +88,6 @@ namespace car4
             case elr.rechts: return (pins.digitalReadPin(pinSpurrechts) == 1) !== (phd == ehd.dunkel)
             default: return false
         }
-        /*  if (plr == elr.links)
-             return n_Spur_links !== (phd == ehd.dunkel) // !== XOR (eine Seite ist true aber nicht beide)
-         else if (plr == elr.rechts)
-             return n_Spur_rechts !== (phd == ehd.dunkel)
-         else
-             return false */
     }
 
     //% group="Spursensor" subcategory="Sensoren"
@@ -102,6 +96,7 @@ namespace car4
         //return (n_Spur_links ? 2 : 0) + (n_Spur_rechts ? 1 : 0)
         return pins.digitalReadPin(pinSpurlinks) * 2 + pins.digitalReadPin(pinSpurrechts)
     }
+
 
 
     // ========== group="Ultraschall" subcategory="Sensoren"
@@ -222,6 +217,11 @@ namespace car4
     }
     export enum eEncoderEinheit { cm, Impulse }
     export enum elr { links, rechts }
-    export enum ehd { hell, dunkel }
+    export enum ehd {
+        //% block="0 dunkel"
+        dunkel,
+        //% block="1 hell"
+        hell
+    }
 
 } // sensoren.ts
