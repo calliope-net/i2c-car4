@@ -65,6 +65,10 @@ namespace car4
     //% block="Datenpaket einlesen %receivedBuffer19" weight=9
     export function onReceivedBuffer(receivedBuffer19: Buffer) {
         n_receivedBuffer19 = receivedBuffer19
+        let servo = n_receivedBuffer19.getUint8(eBuffer.b1_Servo)
+        if (between(servo, 1, 31))
+            n_receivedBuffer19.setUint8(eBuffer.b1_Servo, (servo + 14) * 3)
+        //n_receivedBuffer19.setUint8(eBuffer.b1_Servo, (n_receivedBuffer19.getUint8(eBuffer.b1_Servo) + 14) * 3)
         n_lastconnectedTime = input.runningTime()
     }
 
@@ -74,6 +78,12 @@ namespace car4
         if (n_receivedBuffer19 && n_receivedBuffer19.length > pOffset)
             switch (pOffset) {
                 case eBuffer.b1_Servo: return (between(n_receivedBuffer19.getUint8(pOffset), 45, 135))
+
+                //case eBuffer.b1_Servo: {
+                //    n_receivedBuffer19.setUint8(pOffset, (n_receivedBuffer19.getUint8(pOffset) + 14) * 3)
+                //    return (between(n_receivedBuffer19.getUint8(pOffset), 45, 135))
+                //}
+
                 default: return true
             }
         else
