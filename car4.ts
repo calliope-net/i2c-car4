@@ -144,6 +144,8 @@ namespace car4
         switch (pStatuszeile) {
             case eStatuszeile.start:
                 return n_Log
+            case eStatuszeile.buffer:
+                return receivedBuffer_hex()
             case eStatuszeile.a:
                 return format(motorAget(), 3, eAlign.right) +
                     format(servo_get(), 4, eAlign.right) + " " +
@@ -206,6 +208,8 @@ namespace car4
     export enum eStatuszeile {
         //% block="Protokoll"
         start,
+        //% block="Datenpaket"
+        buffer,
         //% block="(16) Motor, Servo, Spur, Encoder"
         a,
         //% block="(7) Entfernung, Helligkeit"

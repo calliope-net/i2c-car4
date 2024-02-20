@@ -3,7 +3,8 @@ namespace car4
 /*
 */ { // aktoren.ts
 
-    let n_Licht: boolean
+    let n_Licht = false
+    let n_buzzer = false
 
 
     //% group="Relais" subcategory="Aktoren"
@@ -16,7 +17,12 @@ namespace car4
     //% group="Hupe" subcategory="Aktoren"
     //% block="Hupe %pON"
     //% pON.shadow="toggleOnOff"
-    export function buzzer(pON: boolean) { pins.digitalWritePin(pinBuzzer, pON ? 1 : 0) }
+    export function buzzer(pON: boolean) {
+        if (n_buzzer !== pON) {
+            n_buzzer = pON
+            pins.digitalWritePin(pinBuzzer, n_buzzer ? 1 : 0)
+        }
+    }
 
 
 
