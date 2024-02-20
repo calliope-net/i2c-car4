@@ -15,7 +15,8 @@
         "wattmeter.ts",
         "sensoren.ts",
         "aktoren.ts",
-        "bluetooth.ts"
+        "bluetooth.ts",
+        "programmieren.ts"
     ],
     "testFiles": [
         "test.ts"
