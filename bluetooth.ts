@@ -13,7 +13,7 @@ namespace car4
     let n_lastconnectedTime: number // ms seit Start
     let n_connected: boolean // Bluetooth connected
 
-    export enum eBuffer { // 3 Byte (b0-b1-b2) ab n_BufferPointer
+    export enum eBufferOffset { // 3 Byte (b0-b1-b2) ab n_BufferPointer
         b0_Motor, // 0..128..255
         b1_Servo, // Bit 4-0 (0..31)
         b2_Fahrstrecke, // Encoder in cm max. 255cm
@@ -22,12 +22,13 @@ namespace car4
 
     export enum eBit {
         //% block="b2=0 fahren mit Joystick"
-        b2_Joystick,
+        //b2_Joystick,
         //% block="b2>0 fahren Strecke cm"
-        b2_Encoder,
+        //b2_Encoder,
         //% block="x80 Motor Power"
-        x80_MotorPower
-
+        x80_MotorPower,
+        //% block="x40 Hupe"
+        x40_Hupe,
     }
 
     export function bluetooth_beimStart() {
@@ -65,15 +66,15 @@ namespace car4
     //% block="Datenpaket einlesen %receivedBuffer19" weight=9
     export function onReceivedBuffer(receivedBuffer19: Buffer) {
         n_receivedBuffer19 = receivedBuffer19
-        let servo = n_receivedBuffer19.getUint8(eBuffer.b1_Servo)
+        let servo = n_receivedBuffer19.getUint8(eBufferOffset.b1_Servo)
         if (between(servo, 1, 31))
-            n_receivedBuffer19.setUint8(eBuffer.b1_Servo, (servo + 14) * 3)
+            n_receivedBuffer19.setUint8(eBufferOffset.b1_Servo, (servo + 14) * 3)
         //n_receivedBuffer19.setUint8(eBuffer.b1_Servo, (n_receivedBuffer19.getUint8(eBuffer.b1_Servo) + 14) * 3)
         n_lastconnectedTime = input.runningTime()
     }
 
     //% group="Bluetooth empfangen" subcategory="Bluetooth" color=#E3008C
-    //% block="Datenpaket gültig || enthält %pBufferPointer" weight=8
+    //% block="Datenpaket gültig || enthält %pBufferPointer | " weight=8
     export function receivedBuffer_Contains(pBufferPointer?: eBufferPointer): boolean {
         if (!pBufferPointer) pBufferPointer = n_BufferPointer
         // n=0..5 (n*3)+1 = 1, 4, 7, 10, 13, 16
@@ -98,13 +99,18 @@ namespace car4
 
     //% group="Bluetooth empfangen" subcategory="Bluetooth" color=#E3008C
     //% block="Byte lesen %pOffset || %pBufferPointer " weight=7
-    export function receivedBuffer_getUint8(pOffset: eBuffer, pBufferPointer?: eBufferPointer) {
+    export function receivedBuffer_getUint8(pBufferOffset: eBufferOffset, pBufferPointer?: eBufferPointer) {
         //basic.showNumber(pBufferPointer)
+
         if (!pBufferPointer) pBufferPointer = n_BufferPointer // wenn nicht angegeben internen Wert nehmen
-        if (receivedBuffer_Contains(pBufferPointer))
-            return n_receivedBuffer19.getUint8(pBufferPointer + pOffset)
-        else
-            return 0
+        if (receivedBuffer_Contains(pBufferPointer)) {
+            let r = n_receivedBuffer19.getUint8(pBufferPointer + pBufferOffset)
+            switch (pBufferOffset) {
+                case eBufferOffset.b1_Servo: return ((r & 0b00011111) + 14) * 3 // Servo 1..31 +14 15..45 *3 45..135
+                case eBufferOffset.b1_Bits: return r >>> 5 // r & 0b11100000 // Bits 0..7
+                default: return r // b0_Motor und b2_Fahrstrecke 0..255
+            }
+        } else return 0
     }
 
     //% group="Bluetooth empfangen" subcategory="Bluetooth" color=#E3008C
@@ -113,8 +119,8 @@ namespace car4
         switch (pBit) {
             //case eBit.b2_Joystick: return receivedBuffer_getUint8(eBuffer.b2_Fahrstrecke) == 0
             //case eBit.b2_Encoder: return receivedBuffer_getUint8(eBuffer.b2_Fahrstrecke) > 0
-            //case eBit.x80_MotorPower: return (receivedBuffer_getUint8(eBuffer.b3_Bits) & 0x80) == 0x80
-
+            case eBit.x80_MotorPower: return (receivedBuffer_getUint8(0) & 0x80) == 0x80
+            case eBit.x40_Hupe: return (receivedBuffer_getUint8(0) & 0x40) == 0x40
             default: return false
         }
     }
