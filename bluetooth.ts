@@ -4,20 +4,16 @@ namespace car4
 */ { // bluetooth.ts
 
     let n_receivedBuffer19: Buffer
-    let n_sendBuffer19: Buffer
+    let n_BufferPointer = 0 // n=0..5 (n*3)+1 = 1, 4, 7, 10, 13, 16
 
     let n_lastconnectedTime: number // ms seit Start
     let n_connected: boolean // Bluetooth connected
 
-    export enum eBuffer {
-        b0_Motor,
-        b1_Servo,
-        b2_Fahrstrecke,
-        b3_Bits,
-        b4,
-        b5,
-        b6,
-        b7
+    export enum eBuffer { // 3 Byte (b0-b1-b2) ab n_BufferPointer
+        b0_Motor, // 0..128..255
+        b1_Servo, // Bit 4-0 (0..31)
+        b2_Fahrstrecke, // Encoder in cm max. 255cm
+        b1_Bits // Bit 7-6-5
     }
 
     export enum eBit {
@@ -75,19 +71,24 @@ namespace car4
     //% group="Bluetooth empfangen" subcategory="Bluetooth" color=#E3008C
     //% block="Datenpaket enthält %pOffset" weight=8
     export function receivedBuffer_Contains(pOffset: eBuffer): boolean {
-        if (n_receivedBuffer19 && n_receivedBuffer19.length > pOffset)
-            switch (pOffset) {
-                case eBuffer.b1_Servo: return (between(n_receivedBuffer19.getUint8(pOffset), 45, 135))
-
-                //case eBuffer.b1_Servo: {
-                //    n_receivedBuffer19.setUint8(pOffset, (n_receivedBuffer19.getUint8(pOffset) + 14) * 3)
-                //    return (between(n_receivedBuffer19.getUint8(pOffset), 45, 135))
-                //}
-
-                default: return true
-            }
-        else
-            return false
+        // n=0..5 (n*3)+1 = 1, 4, 7, 10, 13, 16
+        return (n_receivedBuffer19 && n_receivedBuffer19.length > ((n_BufferPointer * 3) + 3)) // max 18
+        /* 
+                let lPointer = (n_BufferPointer * 3) + 1 // n=0..5 (n*3)+1 = 1, 4, 7, 10, 13, 16
+        
+                if (n_receivedBuffer19 && n_receivedBuffer19.length > lPointer + 2) // max 18
+                    switch (pOffset) {
+                        case eBuffer.b1_Servo: return (between(n_receivedBuffer19.getUint8(pOffset), 45, 135))
+        
+                        //case eBuffer.b1_Servo: {
+                        //    n_receivedBuffer19.setUint8(pOffset, (n_receivedBuffer19.getUint8(pOffset) + 14) * 3)
+                        //    return (between(n_receivedBuffer19.getUint8(pOffset), 45, 135))
+                        //}
+        
+                        default: return true
+                    }
+                else
+                    return false */
     }
 
     //% group="Bluetooth empfangen" subcategory="Bluetooth" color=#E3008C
@@ -105,7 +106,7 @@ namespace car4
         switch (pBit) {
             case eBit.b2_Joystick: return receivedBuffer_getUint8(eBuffer.b2_Fahrstrecke) == 0
             case eBit.b2_Encoder: return receivedBuffer_getUint8(eBuffer.b2_Fahrstrecke) > 0
-            case eBit.x80_MotorPower: return (receivedBuffer_getUint8(eBuffer.b3_Bits) & 0x80) == 0x80
+            //case eBit.x80_MotorPower: return (receivedBuffer_getUint8(eBuffer.b3_Bits) & 0x80) == 0x80
 
             default: return false
         }
