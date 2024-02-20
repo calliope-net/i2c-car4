@@ -150,7 +150,7 @@ namespace car4
                 return format(motorAget(), 3, eAlign.right) +
                     format(servo_get(), 4, eAlign.right) + " " +
                     bin(spursensor_get()) + " " +
-                    format(encoder_get(eEncoderEinheit.Impulse), 5, eAlign.right)
+                    format(encoder_get(eEncoderEinheit.cm), 5, eAlign.right)
             case eStatuszeile.b:
                 return format(entfernung_cm(), 3, eAlign.right) +
                     format(helligkeit_analog(), 4, eAlign.right)

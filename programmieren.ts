@@ -10,10 +10,10 @@ namespace car4
     //% block="Motor %motor Servo %servo Strecke %pStrecke cm" weight=7
     //% motor.shadow="speedPicker" servo.shadow="protractorPicker" servo.defl=90
     //% strecke.min=1 strecke.max=255 strecke.defl=20
-    export function programmBlock(motor: number, servo: number, strecke: number) {
+    export function programmSchritt(motor: number, servo: number, strecke: number) {
         return Buffer.fromArray([
             Math.round(Math.map(motor, -100, 100, 0, 255)),
-            Math.round(Math.map(servo, 0, 180, 45, 135)),
+            Math.round(Math.map(servo, 0, 180, 31, 1)),
             strecke
         ])
     }
@@ -38,5 +38,41 @@ namespace car4
         return rBuffer
         //n_sendBuffer19 = rBuffer
     }
+
+    //% group="Programmieren" subcategory="Programmieren"
+    //% block="Programm fahre receivedBuffer19" weight=4
+    export function fahreBuffer19() {
+        //let motor: number, strecke: number
+        for (let iBufferPointer: eBufferPointer = eBufferPointer.p0; iBufferPointer < 19; iBufferPointer += 3) { // 1, 4, 7, 10, 13, 16
+            // motor = receivedBuffer_getUint8(eBufferOffset.b0_Motor,iBufferPointer)
+            //servo = receivedBuffer_getUint8(eBufferOffset.b1_Servo,iBufferPointer)
+            //strecke = receivedBuffer_getUint8(eBufferOffset.b2_Fahrstrecke,iBufferPointer)
+
+            encoder_reset(receivedBuffer_getUint8(eBufferOffset.b2_Fahrstrecke, iBufferPointer))
+            servo(receivedBuffer_getUint8(eBufferOffset.b1_Servo, iBufferPointer))
+            motorA255(receivedBuffer_getUint8(eBufferOffset.b0_Motor, iBufferPointer))
+
+            wartebis(n_EncoderEvent)
+
+        }
+        motorA255(128)
+    }
+
+    //% group="Programmieren" subcategory="Programmieren"
+    //% block="Programm fahre Schritt %p0" weight=3
+    export function fahreSchritt(p0: Buffer) {
+        encoder_reset(p0.getUint8(eBufferOffset.b2_Fahrstrecke))
+        servo(((p0.getUint8(eBufferOffset.b1_Servo) & 0b00011111) + 14) * 3)
+        motorA255(p0.getUint8(eBufferOffset.b0_Motor))
+
+         while (!(encoder_get(eEncoderEinheit.cm) > 20)) {
+             basic.pause(2)
+         }
+     
+        motorA255(128)
+    }
+
+
+   
 
 } // programmieren.ts

@@ -9,7 +9,8 @@ namespace car4
 
     let n_Encoder: number = 0 // Impuls Zähler
     let n_EncoderFaktor = 63.3 * (26 / 14) / (8 * Math.PI) // 63.3 Motorwelle * (26/14) Zahnräder / (8cm * PI) Rad Umfang = 4.6774502 cm
-    let n_EncoderEventValue: number = 0 // löst Event aus bei Zähler in cm
+    let n_EncoderStrecke_cm: number = 0 // löst Event aus bei Zähler in cm
+    export let n_EncoderEvent = false
 
     // Event Handler
     pins.onPulsed(pinEncoder, PulseValue.Low, function () {
@@ -17,20 +18,22 @@ namespace car4
         if (motorAget() >= 128) n_Encoder += 1 // vorwärts
         else n_Encoder -= 1 // rückwärts
 
-        if (n_EncoderEventValue > 0 && Math.abs(encoder_get(eEncoderEinheit.cm)) >= n_EncoderEventValue) {
-            n_EncoderEventValue = 0 // Ereignis nur einmalig auslösen, wieder aktivieren mit encoder_reset
+        if (n_EncoderStrecke_cm > 0 && Math.abs(encoder_get(eEncoderEinheit.cm)) >= n_EncoderStrecke_cm) {
+            n_EncoderStrecke_cm = 0 // Ereignis nur einmalig auslösen, wieder aktivieren mit encoder_reset
+            n_EncoderEvent = true
             control.raiseEvent(encoder_EventSource(), EventBusValue.MICROBIT_EVT_ANY)
         }
     })
 
 
     //% group="Encoder" subcategory="Sensoren"
-    //% block="Encoder Reset || Ereignis auslösen bei %pEncoderEventValue cm" weight=9
-    //% pEncoderEventValue.defl=0
-    export function encoder_reset(pEncoderEventValue = 0) {
+    //% block="Encoder Reset || Ereignis auslösen bei %strecke cm" weight=9
+    //% strecke.min=1 strecke.max=255 strecke.defl=20
+    export function encoder_reset(strecke = 0) {
         n_Encoder = 0 // Impuls Zähler zurück setzen
-        if (pEncoderEventValue > 0) n_EncoderEventValue = pEncoderEventValue
-        else n_EncoderEventValue = 0
+        if (strecke > 0) n_EncoderStrecke_cm = strecke
+        else n_EncoderStrecke_cm = 0
+        n_EncoderEvent = false
     }
 
     //% group="Encoder" subcategory="Sensoren"
