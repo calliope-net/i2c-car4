@@ -4,7 +4,11 @@ namespace car4
 */ { // bluetooth.ts
 
     let n_receivedBuffer19: Buffer
-    let n_BufferPointer = 0 // n=0..5 (n*3)+1 = 1, 4, 7, 10, 13, 16
+
+    export enum eBufferPointer {
+        p0 = 1, p1 = 4, p2 = 7, p3 = 10, p4 = 13, p5 = 16
+    }
+    let n_BufferPointer: eBufferPointer = eBufferPointer.p0 // n=0..5 (n*3)+1 = 1, 4, 7, 10, 13, 16
 
     let n_lastconnectedTime: number // ms seit Start
     let n_connected: boolean // Bluetooth connected
@@ -69,8 +73,9 @@ namespace car4
     }
 
     //% group="Bluetooth empfangen" subcategory="Bluetooth" color=#E3008C
-    //% block="Datenpaket enthält %pOffset" weight=8
-    export function receivedBuffer_Contains(pOffset: eBuffer): boolean {
+    //% block="Datenpaket gültig || enthält %pBufferPointer" weight=8
+    export function receivedBuffer_Contains(pBufferPointer?: eBufferPointer): boolean {
+        if (!pBufferPointer) pBufferPointer = n_BufferPointer
         // n=0..5 (n*3)+1 = 1, 4, 7, 10, 13, 16
         return (n_receivedBuffer19 && n_receivedBuffer19.length > ((n_BufferPointer * 3) + 3)) // max 18
         /* 
@@ -92,10 +97,12 @@ namespace car4
     }
 
     //% group="Bluetooth empfangen" subcategory="Bluetooth" color=#E3008C
-    //% block="Byte lesen %pOffset" weight=7
-    export function receivedBuffer_getUint8(pOffset: eBuffer) {
-        if (receivedBuffer_Contains(pOffset))
-            return n_receivedBuffer19.getUint8(pOffset)
+    //% block="Byte lesen %pOffset || %pBufferPointer " weight=7
+    export function receivedBuffer_getUint8(pOffset: eBuffer, pBufferPointer?: eBufferPointer) {
+        //basic.showNumber(pBufferPointer)
+        if (!pBufferPointer) pBufferPointer = n_BufferPointer // wenn nicht angegeben internen Wert nehmen
+        if (receivedBuffer_Contains(pBufferPointer))
+            return n_receivedBuffer19.getUint8(pBufferPointer + pOffset)
         else
             return 0
     }
@@ -104,8 +111,8 @@ namespace car4
     //% block="Bit lesen %pBit" weight=6
     export function receivedBuffer_getBit(pBit: eBit) {
         switch (pBit) {
-            case eBit.b2_Joystick: return receivedBuffer_getUint8(eBuffer.b2_Fahrstrecke) == 0
-            case eBit.b2_Encoder: return receivedBuffer_getUint8(eBuffer.b2_Fahrstrecke) > 0
+            //case eBit.b2_Joystick: return receivedBuffer_getUint8(eBuffer.b2_Fahrstrecke) == 0
+            //case eBit.b2_Encoder: return receivedBuffer_getUint8(eBuffer.b2_Fahrstrecke) > 0
             //case eBit.x80_MotorPower: return (receivedBuffer_getUint8(eBuffer.b3_Bits) & 0x80) == 0x80
 
             default: return false
