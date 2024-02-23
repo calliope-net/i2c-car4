@@ -42,6 +42,7 @@ namespace car4
 
     radio.onReceivedBuffer(function (receivedBuffer) {
         n_receivedBuffer19 = receivedBuffer
+        //radio.lastPacket.serial
         n_lastconnectedTime = input.runningTime()
         if (onReceivedBufferHandler2)
             onReceivedBufferHandler2()
@@ -57,9 +58,7 @@ namespace car4
 
     //% block="wenn Datenpaket empfangen" subcategory="Bluetooth" color=#E3008C
     export function onReceivedData2(cb: () => void) {
-        //init();
         onReceivedBufferHandler2 = cb;
-        //radio.onReceivedBuffer(cb)
     }
 
 

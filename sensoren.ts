@@ -7,38 +7,63 @@ namespace car4
 
     // ========== group="Encoder" subcategory="Sensoren"
 
-    let n_Encoder: number = 0 // Impuls Zähler
+    let n_EncoderCounter: number = 0 // Impuls Zähler
     let n_EncoderFaktor = 63.3 * (26 / 14) / (8 * Math.PI) // 63.3 Motorwelle * (26/14) Zahnräder / (8cm * PI) Rad Umfang = 4.6774502 cm
-    let n_EncoderStrecke_cm: number = 0 // löst Event aus bei Zähler in cm
+    //let n_EncoderStrecke_cm: number = 0 // löst Event aus bei Zähler in cm
+    let n_EncoderStrecke_impulse: number = 0
     export let n_EncoderEvent = false
 
     // Event Handler
     pins.onPulsed(pinEncoder, PulseValue.Low, function () {
         // Encoder 63.3 Impulse pro U/Motorwelle
-        if (motorAget() >= 128) n_Encoder += 1 // vorwärts
-        else n_Encoder -= 1 // rückwärts
+        if (motorAget() >= 128) n_EncoderCounter += 1 // vorwärts
+        else n_EncoderCounter -= 1 // rückwärts
 
-        if (n_EncoderStrecke_cm > 0 && Math.abs(encoder_get(eEncoderEinheit.cm)) >= n_EncoderStrecke_cm) {
+        if (n_EncoderStrecke_impulse > 0 && Math.abs(n_EncoderCounter) >= n_EncoderStrecke_impulse) {
+            n_EncoderStrecke_impulse = 0 // Ereignis nur einmalig auslösen, wieder aktivieren mit encoder_reset
+            //n_EncoderEvent = true
+            if (onEncoderStopHandler)
+                onEncoderStopHandler(n_EncoderCounter / n_EncoderFaktor)
+        }
+
+        /* if (n_EncoderStrecke_cm > 0 && Math.abs(encoder_get(eEncoderEinheit.cm)) >= n_EncoderStrecke_cm) {
             n_EncoderStrecke_cm = 0 // Ereignis nur einmalig auslösen, wieder aktivieren mit encoder_reset
             n_EncoderEvent = true
-            control.raiseEvent(encoder_EventSource(), EventBusValue.MICROBIT_EVT_ANY)
-        }
+            //control.raiseEvent(encoder_EventSource(), EventBusValue.MICROBIT_EVT_ANY)
+
+            if (onEncoderStopHandler)
+                onEncoderStopHandler(n_EncoderStrecke_cm)
+        } */
     })
+
+    let onEncoderStopHandler: (v: number) => void
+
+    //% block="wenn Ziel erreicht" subcategory="Sensoren"
+    //% draggableParameters=reporter
+    export function onEncoderStop(cb: (v: number) => void) {
+        onEncoderStopHandler = cb
+    }
+
 
 
     //% group="Encoder" subcategory="Sensoren"
     //% block="Encoder Reset || Ereignis auslösen bei %strecke cm" weight=9
     //% strecke.min=1 strecke.max=255 strecke.defl=20
-    export function encoder_reset(strecke = 0) {
-        n_Encoder = 0 // Impuls Zähler zurück setzen
-        if (strecke > 0) n_EncoderStrecke_cm = strecke
-        else n_EncoderStrecke_cm = 0
+    export function encoder_reset(streckecm = 0) {
+        n_EncoderCounter = 0 // Impuls Zähler zurück setzen
+
+        /* if (streckecm > 0) n_EncoderStrecke_cm = streckecm
+        else n_EncoderStrecke_cm = 0 */
+
+        if (streckecm > 0) n_EncoderStrecke_impulse = Math.round(streckecm * n_EncoderFaktor)
+        else n_EncoderStrecke_impulse = 0
+
         n_EncoderEvent = false
     }
 
     //% group="Encoder" subcategory="Sensoren"
     //% block="Encoder Ereignis Quelle" weight=8
-    export function encoder_EventSource() { return 16022 }
+    //export function encoder_EventSource() { return 16022 }
 
 
 
@@ -67,9 +92,9 @@ namespace car4
         if (pEncoderEinheit == eEncoderEinheit.cm)
             // 63.3 Motorwelle * (26/14) Zahnräder / (8cm * PI) Rad Umfang = 4.6774502 cm
             // Test: 946 Impulse = 200 cm
-            return Math.round(n_Encoder / n_EncoderFaktor)
+            return Math.round(n_EncoderCounter / n_EncoderFaktor)
         else
-            return n_Encoder
+            return n_EncoderCounter
     }
 
 
