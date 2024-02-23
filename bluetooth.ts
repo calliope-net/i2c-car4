@@ -36,6 +36,36 @@ namespace car4
 
     // ========== group="Bluetooth Verbindung" subcategory="Bluetooth"
 
+
+    let onReceivedBufferHandler: (receivedBuffer: Buffer) => void
+    let onReceivedBufferHandler2: () => void
+
+    radio.onReceivedBuffer(function (receivedBuffer) {
+        n_receivedBuffer19 = receivedBuffer
+        n_lastconnectedTime = input.runningTime()
+        if (onReceivedBufferHandler2)
+            onReceivedBufferHandler2()
+    })
+
+    //% block="wenn Datenpaket empfangen" subcategory="Bluetooth" color=#E3008C
+    //% draggableParameters=reporter
+    export function onReceivedData(cb: (receivedBuffer: Buffer) => void) {
+        //init();
+        onReceivedBufferHandler = cb;
+        //radio.onReceivedBuffer(cb)
+    }
+
+    //% block="wenn Datenpaket empfangen" subcategory="Bluetooth" color=#E3008C
+    export function onReceivedData2(cb: () => void) {
+        //init();
+        onReceivedBufferHandler2 = cb;
+        //radio.onReceivedBuffer(cb)
+    }
+
+
+
+
+
     //% group="Bluetooth Verbindung" subcategory="Bluetooth" color=#E3008C
     //% block="letztes Datenpaket vor > %sekunden Sekunden" weight=4
     //% sekunden.shadow=car4_ePause
@@ -64,7 +94,7 @@ namespace car4
 
     //% group="Bluetooth empfangen" subcategory="Bluetooth" color=#E3008C
     //% block="Datenpaket einlesen %receivedBuffer19" weight=9
-    export function onReceivedBuffer(receivedBuffer19: Buffer) {
+    export function receivedBuffer_set(receivedBuffer19: Buffer) {
         n_receivedBuffer19 = receivedBuffer19
         //let servo = n_receivedBuffer19.getUint8(eBufferOffset.b1_Servo)
         //if (between(servo, 1, 31))

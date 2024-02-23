@@ -65,11 +65,15 @@ namespace car4
         servo(((p0.getUint8(eBufferOffset.b1_Servo) & 0b00011111) + 14) * 3)
         motorA255(p0.getUint8(eBufferOffset.b0_Motor))
 
-         while (!(encoder_get(eEncoderEinheit.cm) > 20)) {
+        /* while (!n_EncoderEvent) {
+            basic.pause(2)
+        } */
+
+        /*  while (!(encoder_get(eEncoderEinheit.cm) > 20)) {
              basic.pause(2)
-         }
+         } */
      
-        motorA255(128)
+        //motorA255(128)
     }
 
 
