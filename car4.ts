@@ -109,6 +109,7 @@ namespace car4
     //% block="Servo (135° ↖ 90° ↗ 45°) %winkel °" weight=4
     //% winkel.min=45 winkel.max=135 winkel.defl=90
     export function servo(winkel: number) {
+        // (0+14)*3=42 keine Änderung
         if (between(winkel, 45, 135) && n_ServoWinkel != winkel) {
             n_ServoWinkel = winkel
             pins.servoWritePin(pinServo, winkel + n_Servo_geradeaus - 90)
