@@ -21,7 +21,9 @@ namespace car4
 
         if (n_EncoderStrecke_impulse > 0 && Math.abs(n_EncoderCounter) >= n_EncoderStrecke_impulse) {
             n_EncoderStrecke_impulse = 0 // Ereignis nur einmalig auslösen, wieder aktivieren mit encoder_reset
-            //n_EncoderEvent = true
+
+            n_EncoderEvent = true
+
             if (onEncoderStopHandler)
                 onEncoderStopHandler(n_EncoderCounter / n_EncoderFaktor)
         }
@@ -72,19 +74,32 @@ namespace car4
     //% block="Fahrstrecke %pVergleich %cm cm" weight=7
     export function encoder_vergleich(pVergleich: eVergleich, cm: number) {
         switch (pVergleich) {
-            case eVergleich.gt: return encoder_get(eEncoderEinheit.cm) > cm
-            case eVergleich.lt: return encoder_get(eEncoderEinheit.cm) < cm
+            case eVergleich.gt: return encoder_get(eEncoderEinheit.cm) >= cm
+            case eVergleich.lt: return encoder_get(eEncoderEinheit.cm) <= cm
             default: return false
         }
     }
 
-    // group="Encoder" subcategory="Sensoren"
-    // block="Fahrstrecke cm" weight=6
-    /* export function encoder_cm() {
-        // 63.3 Motorwelle * (26/14) Zahnräder / (8cm * PI) Rad Umfang = 4.6774502 cm
-        // Test: 946 Impulse = 200 cm
-        return n_Encoder / n_EncoderFaktor
+    //% group="Encoder" subcategory="Sensoren"
+    //% block="warte bis Strecke %pVergleich %cm cm || Pause %ms ms" weight=6
+    //% cm.defl=15 ms.defl=20
+    export function encoder_warten(pVergleich: eVergleich, cm: number, ms?: number) {
+        while (encoder_vergleich(pVergleich, cm)) {
+            basic.pause(ms)
+        }
+    }
+
+
+    //% group="warten" subcategory="Sensoren"
+    //% block="warte bis %bedingung || Pause %ms ms" weight=2
+    //% ms.defl=20
+    /* export function wartebis(bedingung: boolean, ms?: number) {
+        while (!bedingung) {
+            basic.pause(ms)
+        }
     } */
+
+
 
     //% group="Encoder" subcategory="Sensoren"
     //% block="Encoder %pEncoderEinheit" weight=4
@@ -134,8 +149,8 @@ namespace car4
     //% cm.min=1 cm.max=50 cm.defl=15
     export function entfernung_vergleich(pVergleich: eVergleich, cm: number) {
         switch (pVergleich) {
-            case eVergleich.gt: return entfernung_cm() > cm
-            case eVergleich.lt: return entfernung_cm() < cm
+            case eVergleich.gt: return entfernung_cm() >= cm
+            case eVergleich.lt: return entfernung_cm() <= cm
             default: return false
         }
     }
@@ -176,8 +191,8 @@ namespace car4
     //% block="Helligkeit %pVergleich %analog" weight=8
     export function helligkeit_vergleich(pVergleich: eVergleich, analog: number) {
         switch (pVergleich) {
-            case eVergleich.gt: return helligkeit_analog() > analog
-            case eVergleich.lt: return helligkeit_analog() < analog
+            case eVergleich.gt: return helligkeit_analog() >= analog
+            case eVergleich.lt: return helligkeit_analog() <= analog
             default: return false
         }
     }
@@ -193,11 +208,11 @@ namespace car4
     //% group="warten" subcategory="Sensoren"
     //% block="warte bis %bedingung || Pause %ms ms" weight=2
     //% ms.defl=20
-    export function wartebis(bedingung: boolean, ms?: number) {
+    /* export function wartebis(bedingung: boolean, ms?: number) {
         while (!bedingung) {
             basic.pause(ms)
         }
-    }
+    } */
 
     //% group="warten" subcategory="Sensoren"
     //% block="warte %sekunden Sekunden" weight=1
@@ -238,9 +253,9 @@ namespace car4
     export function car4_ePause(pPause: ePause): number { return pPause / 10 }
 
     export enum eVergleich {
-        //% block=">"
+        //% block=">="
         gt,
-        //% block="<"
+        //% block="<="
         lt
     }
     export enum eEncoderEinheit { cm, Impulse }

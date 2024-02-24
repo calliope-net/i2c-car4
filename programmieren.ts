@@ -40,10 +40,10 @@ namespace car4
     }
 
     //% group="Programmieren" subcategory="Programmieren"
-    //% block="Programm fahre receivedBuffer19" weight=4
+    //% block="fahre Strecke 1-5 aus Datenpaket" weight=4
     export function fahreBuffer19() {
         //let motor: number, strecke: number
-        for (let iBufferPointer: eBufferPointer = eBufferPointer.p0; iBufferPointer < 19; iBufferPointer += 3) { // 1, 4, 7, 10, 13, 16
+        for (let iBufferPointer: eBufferPointer = eBufferPointer.p1; iBufferPointer < 19; iBufferPointer += 3) { // 1, 4, 7, 10, 13, 16
             // motor = receivedBuffer_getUint8(eBufferOffset.b0_Motor,iBufferPointer)
             //servo = receivedBuffer_getUint8(eBufferOffset.b1_Servo,iBufferPointer)
             //strecke = receivedBuffer_getUint8(eBufferOffset.b2_Fahrstrecke,iBufferPointer)
@@ -52,10 +52,12 @@ namespace car4
             servo(receivedBuffer_getUint8(eBufferOffset.b1_Servo, iBufferPointer))
             motorA255(receivedBuffer_getUint8(eBufferOffset.b0_Motor, iBufferPointer))
 
-            wartebis(n_EncoderEvent)
+            while (!n_EncoderEvent) {
+                basic.pause(20)
+            }
 
         }
-        motorA255(128)
+        //motorA255(128)
     }
 
     //% group="Programmieren" subcategory="Programmieren"
