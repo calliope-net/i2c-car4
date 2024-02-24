@@ -28,18 +28,17 @@ namespace car4
 
 
 
-    // ========== group="Bluetooth Verbindung" subcategory="Bluetooth"
 
+    // ========== Bluetooth Event ==========
 
     let onReceivedBufferHandler: (receivedBuffer: Buffer) => void
     //let onReceivedBufferHandler2: () => void
-
 
     // Event (aus radio) wenn Buffer empfangen
     radio.onReceivedBuffer(function (receivedBuffer) {
         n_receivedBuffer19 = receivedBuffer
 
-        if (car4ready()) {
+        if (car4ready()) { // beim ersten Mal warten bis Motor bereit
             n_connected = true // wenn Start und Motor bereit, setze auch Bluetooth connected
             licht(false, false) //  Licht aus und Blinken beenden
 
@@ -50,7 +49,12 @@ namespace car4
         }
     })
 
-    //% block="wenn bereit und Datenpaket empfangen" subcategory="Bluetooth" color=#E3008C
+
+
+    // ========== group="Bluetooth Verbindung" subcategory="Bluetooth"
+
+    //% group="Bluetooth Verbindung" subcategory="Bluetooth" color=#E3008C
+    //% block="wenn bereit und Datenpaket empfangen" weight=9
     //% draggableParameters=reporter
     export function onReceivedData(cb: (receivedBuffer: Buffer) => void) {
         onReceivedBufferHandler = cb
@@ -63,6 +67,23 @@ namespace car4
     } */
 
 
+    //% group="Bluetooth Verbindung" subcategory="Bluetooth" color=#E3008C
+    //% block="Timeout || nach %timeout s, aus nach %ausschalten s, Licht %lichtan, blinken %blinken" weight=8
+    //% timeout.defl=1 ausschalten.defl=60 lichtan.defl=1 blinken.defl=1
+    //% lichtan.shadow="toggleOnOff" blinken.shadow="toggleOnOff"
+    //% inlineInputMode=inline expandableArgumentMode=toggle
+    export function bluetooth_timeout(timeout?: number, ausschalten?: number, lichtan = true, blinken = true) {
+        if (car4ready()) { // beim ersten Mal warten bis Motor bereit
+            if (lastConnected(ausschalten))
+                relay(false) // nach 60 s ohne Bluetooth Relais aus schalten
+            else if (n_connected && lastConnected(timeout))
+                n_connected = false // nach 1 s disconnected
+            else if (!n_connected)
+                licht(lichtan, blinken)
+            return !n_connected // true wenn disconnected, also timeout eingetreten
+        } else
+            return false
+    }
 
 
 
