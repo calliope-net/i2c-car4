@@ -153,12 +153,14 @@ namespace car4
 
 
     export enum eBufferBit {
-        //% block="x80 Motor Power"
+        //% block="Motor Power"
         x80_MotorPower,
-        //% block="x40 Hupe"
+        //% block="Hupe"
         x40_Hupe,
-        //% block="fahren Joystick & ready & connected"
-        fahrenJostick
+        //% block="connected & fahren Joystick"
+        fahrenJostick,
+         //% block="connected & fahren Strecke"
+        fahrenStrecke
     }
 
     //% group="Bluetooth empfangen" subcategory="Bluetooth" color=#E3008C
@@ -171,7 +173,8 @@ namespace car4
             case eBufferBit.x80_MotorPower: return (byte0 & 0x80) == 0x80
             case eBufferBit.x40_Hupe: return (byte0 & 0x40) == 0x40
 
-            case eBufferBit.fahrenJostick: return (byte0 & 0x03) == 0x00 && n_connected
+            case eBufferBit.fahrenJostick: return n_connected && (byte0 & 0x03) == 0x00 // 000
+            case eBufferBit.fahrenStrecke: return n_connected && (byte0 & 0x03) != 0x00 // 001 010 111
             default: return false
         }
     }
