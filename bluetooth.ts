@@ -104,14 +104,22 @@ namespace car4
     //% block="Bluetooth connected" weight=2
     export function isConnected() { return n_connected }
 
-    export function receivedBuffer_hex() {
-        if (n_receivedBuffer19) return n_receivedBuffer19.toHex()
+
+    export function receivedBuffer_hex(pBufferPointer?: eBufferPointer) {
+        // wenn optionaler Parameter fehlt
+        if (!pBufferPointer) pBufferPointer = n_BufferPointer // 1, 4, 7, 10, 13, 16
+        if (n_receivedBuffer19)
+            return n_receivedBuffer19.slice(0, 1).toHex() + n_receivedBuffer19.slice(pBufferPointer, 3).toHex()
         else return "-Buffer-"
     }
 
 
 
     // ========== group="Bluetooth empfangen" subcategory="Bluetooth"
+
+    //% group="Bluetooth empfangen" subcategory="Bluetooth" color=#E3008C
+    //% block="BufferPointer" weight=9
+    export function receivedBuffer_Pointer() { return n_BufferPointer }
 
     //% group="Bluetooth empfangen" subcategory="Bluetooth" color=#E3008C
     //% block="Datenpaket einlesen %receivedBuffer19" weight=9
@@ -159,7 +167,7 @@ namespace car4
         x40_Hupe,
         //% block="connected & fahren Joystick"
         fahrenJostick,
-         //% block="connected & fahren Strecke"
+        //% block="connected & fahren Strecke"
         fahrenStrecke
     }
 

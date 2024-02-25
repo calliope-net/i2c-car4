@@ -145,8 +145,16 @@ namespace car4
         switch (pStatuszeile) {
             case eStatuszeile.start:
                 return n_Log
+
             case eStatuszeile.buffer:
-                return receivedBuffer_hex()
+                return receivedBuffer_hex(eBufferPointer.p1) + " " + receivedBuffer_Pointer()
+
+            case eStatuszeile.programm:
+                return format(motorAget(), 3, eAlign.right) +
+                    format(servo_get(), 4, eAlign.right) + " " +
+                    format(encoder_get(eEncoderEinheit.cm), 4, eAlign.right) + " " +
+                    (receivedBuffer_getBit(eBufferBit.fahrenStrecke) ? 1 : 0)
+
             case eStatuszeile.a:
                 return format(motorAget(), 3, eAlign.right) +
                     format(servo_get(), 4, eAlign.right) + " " +
@@ -209,8 +217,10 @@ namespace car4
     export enum eStatuszeile {
         //% block="Protokoll"
         start,
-        //% block="Datenpaket"
+        //% block="(8) Buffer(0) + 3 Byte ab Pointer (HEX)"
         buffer,
+        //% block="(16) Motor, Servo, Strecke, Pointer, Bit"
+        programm,
         //% block="(16) Motor, Servo, Spur, Encoder"
         a,
         //% block="(7) Entfernung, Helligkeit"
