@@ -39,9 +39,10 @@ namespace car4
         n_receivedBuffer19 = receivedBuffer
 
         if (car4ready()) { // beim ersten Mal warten bis Motor bereit
-            n_connected = true // wenn Start und Motor bereit, setze auch Bluetooth connected
-            licht(false, false) //  Licht aus und Blinken beenden
-
+            if (!n_connected) {
+                licht(false, false) //  Licht aus und Blinken beenden
+                n_connected = true // wenn Start und Motor bereit, setze auch Bluetooth connected
+            }
             n_lastconnectedTime = input.runningTime() // Connection-Timeout Zähler zurück setzen
 
             if (onReceivedBufferHandler)

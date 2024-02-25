@@ -1,7 +1,7 @@
 //% color=#007F00 icon="\uf0d1" block="CaR 4" weight=28
 //% groups='["beim Start","Motor","Servo"]'
 namespace car4
-/* 240213 calliope-net.github.io/car4 f188
+/* 240224 calliope-net.github.io/car4 f188
 
  */ {
     // I²C Adressen sind in qwiicmotor.ts und wattmeter.ts definiert
@@ -23,21 +23,13 @@ namespace car4
     //const i2cMotor = qwiicmotor.eADDR.Motor_x5D
     //const i2cWattmeter = wattmeter.eADDR.Watt_x45
 
-    const n_Simulator: boolean = ("€".charCodeAt(0) == 8364)
+    const c_Simulator: boolean = ("€".charCodeAt(0) == 8364)
+    export const c_Servo_geradeaus = 90
+
     let n_Log = "" // Anzeige auf Display nach Start
-    let n_Servo_geradeaus = 90 // Winkel für geradeaus wird beim Start eingestellt
-    let n_ServoWinkel = 90 // aktuell eingestellter Winkel
+    let n_Servo_geradeaus = c_Servo_geradeaus // Winkel für geradeaus wird beim Start eingestellt
+    let n_ServoWinkel = c_Servo_geradeaus // aktuell eingestellter Winkel
     let n_ready = false
-
-    //let n_Connected: boolean
-    //let iLaufzeit: number // ms seit Start
-    //let iFahrstrecke: number
-
-    //let dBlink = 0
-    //let iServo = 0
-    //let iEncoder = 0
-    //let iMotor = 0
-    //let bLicht = false
 
 
     // ========== group="beim Start"
@@ -59,9 +51,8 @@ namespace car4
 
         relay(true) // Relais an schalten (PIN 0)
 
-
         // I²C Module initialisieren und Fehler anzeigen
-        if (!n_Simulator) {
+        if (!c_Simulator) {
             if (calibration_value != 0)
                 if (!wattmeterReset(calibration_value)) {
                     ex = true
@@ -105,11 +96,25 @@ namespace car4
 
     // ========== group="Servo"
 
+
+    //% group="Servo" deprecated=true
+    //% block="Servodep (135° ↖ 90° ↗ 45°) %winkel °" weight=4
+    //% winkel.min=45 winkel.max=135 winkel.defl=90
+    /* export function servo(winkel: number) {
+        // Richtung ändern: 180-winkel
+        // (0+14)*3=42 keine Änderung, gültige Werte im Buffer 1-31  (1+14)*3=45  (16+14)*3=90  (31+14)*3=135
+        if (between(winkel, 45, 135) && n_ServoWinkel != winkel) {
+            n_ServoWinkel = winkel
+            pins.servoWritePin(pinServo, winkel + n_Servo_geradeaus - 90)
+        }
+    } */
+
     //% group="Servo"
     //% block="Servo (135° ↖ 90° ↗ 45°) %winkel °" weight=4
     //% winkel.min=45 winkel.max=135 winkel.defl=90
-    export function servo(winkel: number) {
-        // (0+14)*3=42 keine Änderung
+    export function servo_set(winkel: number) {
+        // Richtung ändern: 180-winkel
+        // (0+14)*3=42 keine Änderung, gültige Werte im Buffer 1-31  (1+14)*3=45  (16+14)*3=90  (31+14)*3=135
         if (between(winkel, 45, 135) && n_ServoWinkel != winkel) {
             n_ServoWinkel = winkel
             pins.servoWritePin(pinServo, winkel + n_Servo_geradeaus - 90)
@@ -150,13 +155,13 @@ namespace car4
                 return receivedBuffer_hex(eBufferPointer.p1) + " " + receivedBuffer_Pointer()
 
             case eStatuszeile.programm:
-                return format(motorAget(), 3, eAlign.right) +
+                return format(motorA_get(), 3, eAlign.right) +
                     format(servo_get(), 4, eAlign.right) + " " +
                     format(encoder_get(eEncoderEinheit.cm), 4, eAlign.right) + " " +
                     (receivedBuffer_getBit(eBufferBit.fahrenStrecke) ? 1 : 0)
 
             case eStatuszeile.a:
-                return format(motorAget(), 3, eAlign.right) +
+                return format(motorA_get(), 3, eAlign.right) +
                     format(servo_get(), 4, eAlign.right) + " " +
                     bin(spursensor_get()) + " " +
                     format(encoder_get(eEncoderEinheit.cm), 5, eAlign.right)

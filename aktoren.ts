@@ -45,9 +45,9 @@ namespace car4
     //% block="Licht aus < %aus an > %an bei Helligkeit" weight=2
     //% aus.defl=200 an.defl=300
     export function licht_sensor(aus: number, an: number) {
-        if (n_Licht && helligkeit_vergleich(eVergleich.lt, aus)) {
+        if (n_Licht && helligkeit_analog() < aus) {
             licht(false)
-        } else if (!n_Licht && helligkeit_vergleich(eVergleich.gt, an)) {
+        } else if (!n_Licht && helligkeit_analog() > an) {
             licht(true)
         }
     }

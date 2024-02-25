@@ -42,20 +42,21 @@ namespace car4
     //% group="Programmieren" subcategory="Programmieren"
     //% block="fahre Strecke 1-5 aus Datenpaket" weight=4
     export function fahreBuffer19() {
-        //let motor: number, strecke: number
+        let lmotor: number, lservo: number, lstrecke: number
         for (let iBufferPointer: eBufferPointer = eBufferPointer.p1; iBufferPointer < 19; iBufferPointer += 3) { // 1, 4, 7, 10, 13, 16
-            // motor = receivedBuffer_getUint8(eBufferOffset.b0_Motor,iBufferPointer)
-            //servo = receivedBuffer_getUint8(eBufferOffset.b1_Servo,iBufferPointer)
-            //strecke = receivedBuffer_getUint8(eBufferOffset.b2_Fahrstrecke,iBufferPointer)
+            lmotor = receivedBuffer_getUint8(eBufferOffset.b0_Motor, iBufferPointer)
+            lservo = receivedBuffer_getUint8(eBufferOffset.b1_Servo, iBufferPointer)
+            lstrecke = receivedBuffer_getUint8(eBufferOffset.b2_Fahrstrecke, iBufferPointer)
 
-            encoder_reset(receivedBuffer_getUint8(eBufferOffset.b2_Fahrstrecke, iBufferPointer))
-            servo(receivedBuffer_getUint8(eBufferOffset.b1_Servo, iBufferPointer))
-            motorA255(receivedBuffer_getUint8(eBufferOffset.b0_Motor, iBufferPointer))
+            if (lmotor != c_MotorStop && lstrecke > 0) {
+                encoder_start(lstrecke, true)
+                servo_set(lservo)
+                motorA255(lmotor)
 
-            while (!n_EncoderEvent) {
-                basic.pause(20)
+                while (n_EncoderAutoStop) {
+                    basic.pause(200) // Pause kann größer sein, weil Stop schon im Event erfolgt ist
+                }
             }
-
         }
         //motorA255(128)
     }
@@ -63,22 +64,12 @@ namespace car4
     //% group="Programmieren" subcategory="Programmieren"
     //% block="Programm fahre Schritt %p0" weight=3
     export function fahreSchritt(p0: Buffer) {
-        encoder_reset(p0.getUint8(eBufferOffset.b2_Fahrstrecke))
-        servo(((p0.getUint8(eBufferOffset.b1_Servo) & 0b00011111) + 14) * 3)
+        encoder_start(p0.getUint8(eBufferOffset.b2_Fahrstrecke))
+        servo_set(((p0.getUint8(eBufferOffset.b1_Servo) & 0b00011111) + 14) * 3)
         motorA255(p0.getUint8(eBufferOffset.b0_Motor))
 
-        /* while (!n_EncoderEvent) {
-            basic.pause(2)
-        } */
-
-        /*  while (!(encoder_get(eEncoderEinheit.cm) > 20)) {
-             basic.pause(2)
-         } */
-     
         //motorA255(128)
     }
 
-
-   
 
 } // programmieren.ts

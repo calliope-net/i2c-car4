@@ -15,9 +15,10 @@ namespace car4
     const STATUS_1 = 0x77 // This register uses bits to show status. Currently, only b0 is used.
     const CONTROL_1 = 0x78 // 0x01: Reset the processor now.
 
+    export const c_MotorStop = 128
     let n_MotorReady = false
-    let n_MotorON = false // aktueller Wert im Chip
-    let n_MotorA = 128    // aktueller Wert im Chip
+    let n_MotorON = false       // aktueller Wert im Chip
+    let n_MotorA = c_MotorStop  // aktueller Wert im Chip
 
 
     //% group="Motor"
@@ -116,7 +117,7 @@ namespace car4
 
     //% group="Motor"
     //% block="Motor A (0 ↓ 128 ↑ 255)" weight=3
-    export function motorAget() { return n_MotorA }
+    export function motorA_get() { return n_MotorA }
 
     //% group="Motor"
     //% block="watchdog timeout %time * 10ms" weight=2

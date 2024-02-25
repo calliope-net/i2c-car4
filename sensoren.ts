@@ -3,39 +3,34 @@ namespace car4
 /*
 */ { // sensoren.ts
 
-
-
     // ========== group="Encoder" subcategory="Sensoren"
 
     let n_EncoderCounter: number = 0 // Impuls Zähler
     let n_EncoderFaktor = 63.3 * (26 / 14) / (8 * Math.PI) // 63.3 Motorwelle * (26/14) Zahnräder / (8cm * PI) Rad Umfang = 4.6774502 cm
     //let n_EncoderStrecke_cm: number = 0 // löst Event aus bei Zähler in cm
     let n_EncoderStrecke_impulse: number = 0
-    export let n_EncoderEvent = false
+    export let n_EncoderAutoStop = false // true während der Fahrt, false bei Stop nach Ende der Strecke
 
     // Event Handler
     pins.onPulsed(pinEncoder, PulseValue.Low, function () {
         // Encoder 63.3 Impulse pro U/Motorwelle
-        if (motorAget() >= 128) n_EncoderCounter += 1 // vorwärts
-        else n_EncoderCounter -= 1 // rückwärts
+        if (motorA_get() >= c_MotorStop)
+            n_EncoderCounter += 1 // vorwärts
+        else
+            n_EncoderCounter -= 1 // rückwärts
 
         if (n_EncoderStrecke_impulse > 0 && Math.abs(n_EncoderCounter) >= n_EncoderStrecke_impulse) {
-            n_EncoderStrecke_impulse = 0 // Ereignis nur einmalig auslösen, wieder aktivieren mit encoder_reset
+            n_EncoderStrecke_impulse = 0 // Ereignis nur einmalig auslösen, wieder aktivieren mit encoder_start
 
-            n_EncoderEvent = true
+            //n_EncoderStopEvent = true
+            if (n_EncoderAutoStop) {
+                motorA255(c_MotorStop)
+                n_EncoderAutoStop = false
+            }
 
             if (onEncoderStopHandler)
                 onEncoderStopHandler(n_EncoderCounter / n_EncoderFaktor)
         }
-
-        /* if (n_EncoderStrecke_cm > 0 && Math.abs(encoder_get(eEncoderEinheit.cm)) >= n_EncoderStrecke_cm) {
-            n_EncoderStrecke_cm = 0 // Ereignis nur einmalig auslösen, wieder aktivieren mit encoder_reset
-            n_EncoderEvent = true
-            //control.raiseEvent(encoder_EventSource(), EventBusValue.MICROBIT_EVT_ANY)
-
-            if (onEncoderStopHandler)
-                onEncoderStopHandler(n_EncoderStrecke_cm)
-        } */
     })
 
     let onEncoderStopHandler: (v: number) => void
@@ -46,22 +41,34 @@ namespace car4
         onEncoderStopHandler = cb
     }
 
-
-
     //% group="Encoder" subcategory="Sensoren"
-    //% block="Encoder Reset || Ereignis auslösen bei %strecke cm" weight=9
-    //% strecke.min=1 strecke.max=255 strecke.defl=20
-    export function encoder_reset(streckecm = 0) {
+    //% block="Encoder Start, Stop Ereignis bei %streckecm cm || AutoStop %autostop" weight=9
+    //% streckecm.min=1 streckecm.max=255 streckecm.defl=20
+    //% autostop.shadow="toggleYesNo" autostop.defl=1
+    export function encoder_start(streckecm: number, autostop = true) {
         n_EncoderCounter = 0 // Impuls Zähler zurück setzen
 
-        /* if (streckecm > 0) n_EncoderStrecke_cm = streckecm
-        else n_EncoderStrecke_cm = 0 */
+        if (streckecm > 0)
+            n_EncoderStrecke_impulse = Math.round(streckecm * n_EncoderFaktor)
+        else
+            n_EncoderStrecke_impulse = 0
 
-        if (streckecm > 0) n_EncoderStrecke_impulse = Math.round(streckecm * n_EncoderFaktor)
-        else n_EncoderStrecke_impulse = 0
-
-        n_EncoderEvent = false
+        n_EncoderAutoStop = autostop
     }
+
+    //% group="Encoder" subcategory="Sensoren" deprecated=true
+    //% block="Encoder Reset || Ereignis auslösen bei %streckecm cm" weight=9
+    //% streckecm.min=1 streckecm.max=255 streckecm.defl=20
+    /* export function encoder_reset_(streckecm = 0) {
+        n_EncoderCounter = 0 // Impuls Zähler zurück setzen
+
+        if (streckecm > 0)
+            n_EncoderStrecke_impulse = Math.round(streckecm * n_EncoderFaktor)
+        else
+            n_EncoderStrecke_impulse = 0
+
+        n_EncoderStopEvent = false
+    } */
 
     //% group="Encoder" subcategory="Sensoren"
     //% block="Encoder Ereignis Quelle" weight=8
