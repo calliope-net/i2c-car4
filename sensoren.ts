@@ -48,12 +48,13 @@ namespace car4
     export function encoder_start(streckecm: number, autostop = true) {
         n_EncoderCounter = 0 // Impuls Zähler zurück setzen
 
-        if (streckecm > 0)
+        if (streckecm > 0) {
             n_EncoderStrecke_impulse = Math.round(streckecm * n_EncoderFaktor)
-        else
+            n_EncoderAutoStop = autostop
+            n_lastconnectedTime = input.runningTime() // Connection-Timeout Zähler zurück setzen
+        } else {
             n_EncoderStrecke_impulse = 0
-
-        n_EncoderAutoStop = autostop
+        }
     }
 
     //% group="Encoder" subcategory="Sensoren" deprecated=true

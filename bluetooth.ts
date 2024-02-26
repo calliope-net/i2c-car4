@@ -10,7 +10,7 @@ namespace car4
     }
     let n_BufferPointer: eBufferPointer = eBufferPointer.p0 // n=0..5 (n*3)+1 = 1, 4, 7, 10, 13, 16
 
-    let n_lastconnectedTime: number // ms seit Start
+    export let n_lastconnectedTime: number // ms seit Start
     let n_connected: boolean // Bluetooth connected
 
     export enum eBufferOffset { // 3 Byte (b0-b1-b2) ab n_BufferPointer
